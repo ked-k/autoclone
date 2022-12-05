@@ -1,0 +1,16 @@
+<option value='Father'>Father</option>
+<option value='Mother'>Mother</option>
+<option value='Brother'>Brother</option>
+<option value='Sister'>Sister</option>
+<option value='Son'>Son</option>
+<option value='Wife'>Wife</option>
+<option value='Husband'>Husband</option>
+<option value='Concubine'>Concubine</option>
+<option value='Daughter'>Daughter</option>
+<option value='Uncle'>Uncle</option>
+<option value='Auntie'>Auntie</option>
+<option value='Cousin'>Cousin</option>
+<option value='Nephew'>Nephew</option>
+<option value='Grand Father'>Grand Father</option>
+<option value='Grand Mother'>Grand Mother</option>
+<option value='Friend'>Friend</option>

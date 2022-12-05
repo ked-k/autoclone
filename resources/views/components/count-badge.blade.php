@@ -1,0 +1,1 @@
+<span class="badge bg-info pill float-end">{{$slot}}</span>
