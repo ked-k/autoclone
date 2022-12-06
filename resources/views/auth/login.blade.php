@@ -23,7 +23,7 @@
             <div class="col-lg-6">
                 <div class="card-body p-4 p-sm-5">
                     <div class="text-center">
-                        <h3 class="card-title">{{ __('LOGIN') }}</h3>
+                        <h3 class="card-title">{{ __('USER LOGIN') }}</h3>
                         <hr>
                     </div>
 
