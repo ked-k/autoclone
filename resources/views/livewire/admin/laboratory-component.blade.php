@@ -122,9 +122,50 @@
                                         <div class="text-danger text-small">{{ $message }}</div>
                                     @enderror
                                 </div>
+
+                                <div class="mb-3">
+                                    <label for="lab_manger" class="form-label">Laboratory Manager</label>
+                                    <select class="form-select select2" id="lab_manger" name="lab_manger"
+                                        wire:model="lab_manger">
+                                        <option selected value="">Select</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->fullName }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('lab_manger')
+                                        <div class="text-danger text-small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
+                                    <label for="test_approver" class="form-label">Laboratory Test Approver</label>
+                                    <select class="form-select select2" id="test_approver" name="test_approver"
+                                        wire:model="lab_manger">
+                                        <option selected value="">Select</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->fullName }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('test_approver')
+                                        <div class="text-danger text-small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
+                                    <label for="test_reviewer" class="form-label">Laboratory Test Reviewer</label>
+                                    <select class="form-select select2" id="test_reviewer" name="test_reviewer"
+                                        wire:model="test_reviewer">
+                                        <option selected value="">Select</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->fullName }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('test_reviewer')
+                                        <div class="text-danger text-small">{{ $message }}</div>
+                                    @enderror
+                                </div>
                                 <div class="mb-3">
                                     <label for="isActive" class="form-label">Status</label>
-                                    <select class="form-select" id="isActive" name="is_active" wire:model="is_active">
+                                    <select class="form-select select2" id="isActive" name="is_active"
+                                        wire:model="is_active">
                                         <option selected value="">Select</option>
                                         <option value='1'>Active</option>
                                         <option value='0'>Inactive</option>
@@ -133,6 +174,7 @@
                                         <div class="text-danger text-small">{{ $message }}</div>
                                     @enderror
                                 </div>
+
                                 <div class="mb-3">
                                     <label for="description" class="form-label">Description</label>
                                     <textarea class="form-control" id="description" rows="3" name="description" wire:model.lazy="description"></textarea>
@@ -206,8 +248,47 @@
                                     @enderror
                                 </div>
                                 <div class="mb-3">
+                                    <label for="lab_manger" class="form-label">Laboratory Manager</label>
+                                    <select class="form-select select2" id="lab_manger" name="lab_manger"
+                                        wire:model="lab_manger">
+                                        <option selected value="">Select</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->fullName }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('lab_manger')
+                                        <div class="text-danger text-small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
+                                    <label for="test_approver" class="form-label">Laboratory Test Approver</label>
+                                    <select class="form-select select2" id="test_approver" name="test_approver"
+                                        wire:model="test_approver">
+                                        <option selected value="">Select</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->fullName }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('test_approver')
+                                        <div class="text-danger text-small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
+                                    <label for="test_reviewer" class="form-label">Laboratory Test Reviewer</label>
+                                    <select class="form-select select2" id="test_reviewer" name="test_reviewer"
+                                        wire:model="test_reviewer">
+                                        <option selected value="">Select</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->fullName }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('test_reviewer')
+                                        <div class="text-danger text-small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
                                     <label for="isActive2" class="form-label">Status</label>
-                                    <select class="form-select" id="isActive2" name="is_active"
+                                    <select class="form-select select2" id="isActive2" name="is_active"
                                         wire:model="is_active">
                                         <option selected value="">Select</option>
                                         <option value='1'>Active</option>

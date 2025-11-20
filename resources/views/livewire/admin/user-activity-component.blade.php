@@ -31,7 +31,7 @@
                             <div class="row">
                                 <div class="mb-3 col-md-3">
                                     <label for="causer" class="form-label">User/Causer</label>
-                                    <select class="form-select" id="causer" wire:model="causer">
+                                    <select class="form-select select2" id="causer" wire:model="causer">
                                         @if ($checkroute)
                                             <option selected value="{{ auth()->user()->id }}">
                                                 {{ auth()->user()->fullName }}</option>
@@ -51,7 +51,7 @@
                                 </div>
                                 <div class="mb-3 col-md-2">
                                     <label for="event" class="form-label">Event</label>
-                                    <select class="form-select" id="event" wire:model="event">
+                                    <select class="form-select select2" id="event" wire:model="event">
                                         <option selected value="">All</option>
                                         @forelse ($events as $event)
                                             <option value='{{ $event->event }}'>{{ $event->event }}</option>
@@ -64,7 +64,7 @@
                                 </div>
                                 <div class="mb-3 col-md-3">
                                     <label for="subject" class="form-label">Subject/Target</label>
-                                    <select class="form-select" id="subject" wire:model="subject">
+                                    <select class="form-select select2" id="subject" wire:model="subject">
                                         <option selected value="">All</option>
                                         @forelse ($log_names as $log_name)
                                             <option value='{{ $log_name->log_name }}'>{{ $log_name->log_name }}</option>
@@ -115,11 +115,12 @@
                                             <td>{{ $key + 1 }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center gap-3 cursor-pointer">
-                                                    <img src="{{ $log->causer->avatar? asset('storage/' . $log->causer->avatar) : asset('autolab-assets/images/avatars/avatar-1.png') }}"
+                                                    <img src="{{ $log->causer->avatar ? asset('storage/' . $log->causer->avatar) : asset('autolab-assets/images/avatars/avatar-1.png') }}"
                                                         class="rounded-circle" width="44" height="44"
                                                         alt="">
                                                     <div class="">
-                                                        <p class="mb-0">{{ $log->causer!=null? $log->causer->surname:'' }}</p>
+                                                        <p class="mb-0">
+                                                            {{ $log->causer != null ? $log->causer->surname : '' }}</p>
                                                     </div>
                                                 </div>
                                             </td>

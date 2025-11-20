@@ -7,10 +7,39 @@
                         <div class="col-sm-12 mt-3">
                             <div class="d-sm-flex align-items-center">
                                 <h5 class="mb-2 mb-sm-0">
-                                    Test Requests
+                                    <span class="text-danger fw-bold">{{ $sample_is_for }}</span> Tasks
                                 </h5>
                                 <div class="ms-auto">
-                                    <a type="button" class="btn btn-outline-info" wire:click="refresh()"
+                                    <a type="button" class="btn btn-outline-success me-2 fw-bold mb-1"
+                                        wire:click="$set('sample_is_for','Testing')">
+                                        @if ($sample_is_for === 'Testing')
+                                            <span class="spinner-grow spinner-grow-sm" role="status"
+                                                aria-hidden="true"></span>
+                                        @endif
+                                        <i class="bx bxs-flask"></i>Testing (<strong
+                                            class="text-danger">{{ $testAssignmentCount }}</strong>)
+                                    </a>
+                                    <a type="button" class="btn btn-outline-info me-2 fw-bold mb-1"
+                                        wire:click="$set('sample_is_for','Aliquoting')">
+                                        @if ($sample_is_for === 'Aliquoting')
+                                            <span class="spinner-grow spinner-grow-sm" role="status"
+                                                aria-hidden="true"></span>
+                                        @endif
+                                        <i class="bi bi-hourglass-split"></i>Aliquoting (<strong
+                                            class="text-danger">{{ $aliquotingAssignmentCount }}</strong>)
+                                    </a>
+
+                                    <a type="button" class="btn btn-outline-warning me-2 fw-bold mb-1"
+                                        wire:click="$set('sample_is_for','Storage')">
+                                        @if ($sample_is_for === 'Storage')
+                                            <span class="spinner-grow spinner-grow-sm" role="status"
+                                                aria-hidden="true"></span>
+                                        @endif
+
+                                        <i class="bx bx-archive"></i> Storage (<strong
+                                            class="text-danger">{{ $storageAssignmentCount }}</strong>)
+                                    </a>
+                                    <a type="button" class="btn btn-outline-info me-2" wire:click="refresh()"
                                         data-bs-toggle="tooltip" data-bs-placement="top" title=""
                                         data-bs-original-title="Refresh Table"><i class="bi bi-arrow-clockwise"></i></a>
                                 </div>
@@ -38,15 +67,20 @@
                                 <thead>
                                     <tr>
                                         <th>No.</th>
-                                        <th>Batch No</th>
-                                        <th>Participant ID</th>
+                                        <th>No</th>
+                                        <th>PID</th>
                                         <th>Sample</th>
                                         <th>Sample ID</th>
                                         <th>Lab No</th>
                                         <th>Study</th>
-                                        <th>Requested By</th>
-                                        <th>Collected By</th>
-                                        <th>Test Count</th>
+                                        <th>Requester</th>
+                                        <th>Collector</th>
+                                        @if ($sample_is_for == 'Testing')
+                                            <th> TestCount</th>
+                                            <th>Tests Referred</th>
+                                        @elseif($sample_is_for == 'Aliquoting')
+                                            <th> Aliquot Count</th>
+                                        @endif
                                         <th>Priority</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -63,7 +97,7 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                {{ $sample->participant->identity }}
+                                                {{ $sample->participant->identity ?? 'N/A' }}
                                             </td>
                                             <td>
                                                 {{ $sample->sampleType->type }}
@@ -72,23 +106,39 @@
                                                 {{ $sample->sample_identity }}
                                             </td>
                                             <td>
-                                                <a href="javascript: void(0);"
-                                                    wire:click="viewTests({{ $sample->id }})" class="action-ico">
-                                                    <strong class="text-success">{{ $sample->lab_no }}</strong>
-                                                </a>
+                                                @if ($sample->sample_is_for == 'Testing')
+                                                    <a href="javascript: void(0);"
+                                                        wire:click="viewTests({{ $sample->id }})" class="action-ico">
+                                                        <strong class="text-success">{{ $sample->lab_no }}</strong>
+                                                    </a>
+                                                @else
+                                                    <a href="javascript: void(0);"
+                                                        wire:click="viewAliquots({{ $sample->id }})"
+                                                        class="action-ico">
+                                                        <strong class="text-success">{{ $sample->lab_no }}</strong>
+                                                    </a>
+                                                @endif
                                             </td>
                                             <td>
-                                                {{ $sample->study->name??'N/A' }}
+                                                {{ $sample->study?->name ?? 'N/A' }}
                                             </td>
                                             <td>
-                                                {{ $sample->requester->name }}
+                                                {{ $sample->requester?->name??'N/A' }}
                                             </td>
                                             <td>
-                                                {{ $sample->collector->name??'N/A' }}
+                                                {{ $sample->collector->name ?? 'N/A' }}
                                             </td>
-                                            <td>
-                                                {{ $sample->test_count }}
-                                            </td>
+                                            @if ($sample_is_for == 'Testing' || $sample_is_for == 'Aliquoting')
+                                                <td>
+                                                    {{ $sample->test_count }}
+                                                </td>
+                                            @endif
+                                            @if ($sample_is_for == 'Testing')
+                                                <td>
+                                                    <span class="badge bg-primary">{{ $sample->tests_referred_count }}
+                                                        Referred</span>
+                                                </td>
+                                            @endif
                                             @if ($sample->priority == 'Normal')
                                                 <td><span class="badge bg-info">{{ $sample->priority }}</span>
                                                 </td>
@@ -98,18 +148,33 @@
                                             @endif
                                             <td>
                                                 @if ($sample->status == 'Assigned')
-                                                    <span class="badge bg-warning">{{ $sample->status }}</span>
+                                                    <span class="badge bg-success">{{ $sample->status }}</span>
                                                 @else
                                                     <span class="badge bg-info">{{ $sample->status }}</span>
                                                 @endif
 
                                             </td>
                                             <td class="table-action">
-                                                <a href="{{ route('attach-test-results', $sample->id) }}"
-                                                    type="button" class="btn btn-outline-info" data-bs-toggle="tooltip"
-                                                    data-bs-placement="bottom" title=""
-                                                    data-bs-original-title="Attach Results"><i
-                                                        class="bi bi-file-earmark-medical"></i></a>
+
+                                                @if ($sample->sample_is_for == 'Testing')
+                                                    <a href="{{ URL::signedRoute('attach-test-results', $sample->id) }}"
+                                                        type="button" class="btn btn-outline-success"
+                                                        data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                        title="" data-bs-original-title="Attach Results"><i
+                                                            class="bx bxs-flask"></i></a>
+                                                @elseif($sample->sample_is_for == 'Aliquoting')
+                                                    <a href="{{ URL::signedRoute('attach-aliquots', $sample->id) }}"
+                                                        type="button" class="btn btn-outline-info"
+                                                        data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                        title="" data-bs-original-title="Attach Aliquots"><i
+                                                            class="bx bx-vial"></i></a>
+                                                @elseif($sample->sample_is_for == 'Storage')
+                                                    <a href="{{ URL::signedRoute('store-sample', $sample->id) }}"
+                                                        type="button" class="btn btn-outline-warning"
+                                                        data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                        title="" data-bs-original-title="Attach Aliquots"><i
+                                                            class="bx bx-archive"></i></a>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -134,40 +199,60 @@
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h6 class="modal-title" id="staticBackdropLabel">Tests for sample (<span
+                        <h6 class="modal-title" id="staticBackdropLabel">{{ $sample_is_for }} for sample (<span
                                 class="text-info">{{ $sample_identity }}</span>) with Lab_No <span
                                 class="text-info">{{ $lab_no }}</span></h6>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"
                             wire:click="close()"></button>
                     </div> <!-- end modal header -->
                     <div class="row">
-                        <div class="col-md-12">
-                            <ul class="list-group">
-                                @forelse ($tests_requested as $test)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        {{ $test->name }}
-                                    </li>
-                                @empty
-                                @endforelse
-                            </ul>
-                        </div>
-                        @if ($clinical_notes)
-                            <div class="col-md-12">
-                                <div class="card-body text-center">
-                                    <div>
-                                        <h5 class="card-title">Clinical Notes</h5>
+                        @if ($sample_is_for == 'Aliquoting')
+                            <div class="mb-0">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <ul class="list-group">
+                                            @foreach ($aliquots as $key => $aliquot)
+                                                <li class="list-group-item"><strong
+                                                        class="text-danger">Aliquot-{{ $key + 1 }}
+                                                    </strong>{{ $aliquot->type }}
+                                                </li>
+                                            @endforeach
+                                        </ul>
                                     </div>
-                                    <p class="card-text">{{ $clinical_notes }}</p>
                                 </div>
                             </div>
+                        @else
+                            <div class="col-md-12">
+                                <ul class="list-group">
+                                    @forelse ($tests_requested as $test)
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            {{ $test->name }}
+                                        </li>
+                                    @empty
+                                    @endforelse
+                                </ul>
+                            </div>
+                            @if ($clinical_notes)
+                                <div class="col-md-12">
+                                    <div class="card-body text-center">
+                                        <div>
+                                            <h5 class="card-title">Clinical Notes</h5>
+                                        </div>
+                                        <p class="card-text">{{ $clinical_notes }}</p>
+                                    </div>
+                                </div>
+                            @endif
                         @endif
-
                     </div>
 
                     <div class="modal-footer">
                         @if ($request_acknowledged_by)
-                            <a href="{{ route('attach-test-results', $sample_id) }}" type="button"
-                                class="btn btn-success radius-30 px-3">Process</a>
+                            @if ($sample->sample_is_for == 'Testing')
+                                <a href="{{ URL::signedRoute('attach-test-results', $sample_id) }}" type="button"
+                                    class="btn btn-success radius-30 px-3">Process</a>
+                            @else
+                                <a href="#" type="button" class="btn btn-success radius-30 px-3">Process</a>
+                            @endif
                         @endif
 
                         <button class="btn  btn-danger radius-30 px-3" wire:click="close()" data-bs-dismiss="modal"

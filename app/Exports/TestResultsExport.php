@@ -1,17 +1,16 @@
 <?php
-
 namespace App\Exports;
 
 use App\Models\TestResult;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithProperties;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class TestResultsExport implements FromCollection, WithMapping, WithHeadings,WithStyles,WithProperties
+class TestResultsExport implements FromCollection, WithMapping, WithHeadings, WithStyles, WithProperties
 {
     use Exportable;
 
@@ -24,7 +23,7 @@ class TestResultsExport implements FromCollection, WithMapping, WithHeadings,Wit
 
     public function __construct($resultIds)
     {
-        $this->count = 0;
+        $this->count     = 0;
         $this->resultIds = $resultIds;
     }
 
@@ -64,6 +63,7 @@ class TestResultsExport implements FromCollection, WithMapping, WithHeadings,Wit
             $result->sample->sample_identity ?? 'N/A',
             $result->sample->lab_no ?? 'N/A',
             $result->test->name ?? 'N/A',
+            $result->sample?->sampleReception?->date_delivered->diffInHours($result->created_at) . ' (' . $result->sample?->sampleReception?->date_delivered->diffInMinutes($result->created_at) . 'min)',
             $result->sample->requester->name ?? 'N/A',
             date('d-m-Y H:i', strtotime($result->approved_at)) ?? 'N/A',
         ];
@@ -83,6 +83,7 @@ class TestResultsExport implements FromCollection, WithMapping, WithHeadings,Wit
             'Sample ID',
             'Lab No',
             'Test Performed',
+            'TAT (HR<->MIN)',
             'Requested By',
             'Result Date',
         ];
@@ -92,7 +93,7 @@ class TestResultsExport implements FromCollection, WithMapping, WithHeadings,Wit
     {
         return [
             // Style the first row as bold text.
-            1    => ['font' => ['bold' => true]],
+            1 => ['font' => ['bold' => true]],
         ];
     }
 }

@@ -1,6 +1,7 @@
 <!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{auth()->user()->color_scheme??'minimal-theme'}}">
- 
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+    class="{{ auth()->user()->color_scheme ?? 'minimal-theme' }}">
+
 
 <head>
     <!-- Required meta tags -->
@@ -24,10 +25,10 @@
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" /> --}}
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" /> --}}
     <link href="{{ asset('js/izitoast/css/iziToast.min.css') }}" rel="stylesheet" type="text/css">
-
+    <link href="{{ asset('autolab-assets/select2/css/select2.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('autolab-assets/select2/css/select2-bootstrap4.css') }}" rel="stylesheet" />
     <!-- Datatables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css" />
+    <link href="{{ asset('autolab-assets/datatable/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" />
 
     <!-- loader-->
     <link href="{{ asset('autolab-assets/css/pace.min.css') }}" rel="stylesheet" />
@@ -38,15 +39,16 @@
     <link href="{{ asset('autolab-assets/css/semi-dark.css') }}" rel="stylesheet" />
     <link href="{{ asset('autolab-assets/css/header-colors.css') }}" rel="stylesheet" />
     @livewireStyles
-
+    @livewireChartsScripts
 </head>
 
 <body>
 
     <!--start wrapper-->
     <div class="wrapper">
-        <livewire:layout.header-component/>
-        <livewire:layout.navigation-component/>
+        <livewire:layout.header-component />
+        <livewire:layout.navigation-component />
+        {{-- <livewire:layout.navigation-component wire:init="loadCounts" /> --}}
         {{-- @include('layouts.header')
         @include('layouts.navigation') --}}
         <!--start content-->
@@ -66,7 +68,6 @@
         {{-- @include('layouts.theme-customization') --}}
     </div>
     <!--end wrapper-->
-
     <!-- Bootstrap bundle JS -->
     <script src="{{ asset('autolab-assets/js/bootstrap.bundle.min.js') }}"></script>
     <!--plugins-->
@@ -78,11 +79,12 @@
     <!--app-->
     <script src="{{ asset('autolab-assets/js/app.js') }}"></script>
     <script src="{{ asset('autolab-assets/js/sort.js') }}"></script>
-    {{-- <script src="{{ asset('autolab-assets/js/index.js') }}"></script> --}}
-
+    <script src="{{ asset('autolab-assets/js/ckeditor.js') }}"></script>
+    <script src="{{ asset('autolab-assets/select2/js/select2.min.js') }}"></script>
     <!-- Datatables JS -->
-    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+    <script src="{{ asset('autolab-assets/datatable/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('autolab-assets/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
+    {{-- <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.min.js"></script>
 
@@ -93,7 +95,7 @@
 
     <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.colVis.min.js"></script> 
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.colVis.min.js"></script> --}}
 
     <script src="{{ asset('js/izitoast/js/iziToast.min.js') }}"></script>
     <script src="{{ asset('js/sweetalert/sweetalert.min.js') }}"></script>
@@ -117,7 +119,7 @@
                 "responsive": true,
             });
 
-            // document.body.style.zoom = "90%" 
+            // document.body.style.zoom = "90%"
         });
     </script>
 
@@ -159,6 +161,13 @@
             }
         });
 
+
+        window.addEventListener('wrong-data', event => {
+            if (event.detail.type == 'warning') {
+                swal('Warning', `${event.detail.message}`, 'warning');
+            }
+        });
+
         window.addEventListener('cant-delete', event => {
             if (event.detail.type == 'warning') {
                 swal('Warning', `${event.detail.message}`, 'warning');
@@ -170,13 +179,13 @@
                 swal('Error', `${event.detail.message}`, 'error');
             }
         });
-        
+
         window.addEventListener('not-found', event => {
             if (event.detail.type == 'error') {
                 swal('Not Found', `${event.detail.message}`, 'error');
             }
         });
-        
+
         window.addEventListener('current-password-mismatch', event => {
             if (event.detail.type == 'error') {
                 swal('Error', `${event.detail.message}`, 'error');
@@ -187,8 +196,9 @@
             $("html").attr("class", `${event.detail.theme}`)
         });
     </script>
+
     @stack('scripts')
-    
+
     @livewireScripts
 
 </body>

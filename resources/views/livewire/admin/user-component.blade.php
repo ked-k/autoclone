@@ -116,7 +116,7 @@
                         <div class="row">
                             <div class="mb-3 col-md-4">
                                 <label for="title" class="form-label">Title</label>
-                                <select class="form-select" id="title" wire:model="title">
+                                <select class="form-select select2" id="title" wire:model="title">
                                     <option value="" selected>Select</option>
                                     <option value="Mr">Mr</option>
                                     <option value="Mrs">Mrs</option>
@@ -177,7 +177,7 @@
                             </div>
                             <div class="mb-3 col-md-4">
                                 <label for="laboratory_id" class="form-label">Laboratory</label>
-                                <select class="form-select" id="laboratory_id" wire:model="laboratory_id">
+                                <select class="form-select select2" id="laboratory_id" wire:model="laboratory_id">
                                     <option selected value="">Select</option>
                                     @forelse ($laboratories as $laboratory)
                                         <option value='{{ $laboratory->id }}'>{{ $laboratory->laboratory_name }}
@@ -191,7 +191,7 @@
                             </div>
                             <div class="mb-3 col-md-4">
                                 <label for="designation_id" class="form-label">Designation</label>
-                                <select class="form-select" id="designation_id" wire:model="designation_id">
+                                <select class="form-select select2" id="designation_id" wire:model="designation_id">
                                     @if (!$designations->isEmpty())
                                         <option selected value="">Select/None</option>
                                         @foreach ($designations as $designation)
@@ -223,7 +223,8 @@
                             </div>
                             <div class="mb-3 col-md-4">
                                 <label for="isActive" class="form-label">Status</label>
-                                <select class="form-select" id="isActive" name="is_active" wire:model="is_active">
+                                <select class="form-select select2" id="isActive" name="is_active"
+                                    wire:model="is_active">
                                     <option selected value="">Select</option>
                                     <option value='1'>Active</option>
                                     <option value='0'>Inactive</option>
@@ -290,7 +291,7 @@
                         <div class="row">
                             <div class="mb-3 col-md-4">
                                 <label for="title" class="form-label">Title</label>
-                                <select class="form-select" id="title" wire:model="title">
+                                <select class="form-select select2" id="title" wire:model="title">
                                     <option value="" selected>Select</option>
                                     <option value="Mr">Mr</option>
                                     <option value="Mrs">Mrs</option>
@@ -351,7 +352,7 @@
                             </div>
                             <div class="mb-3 col-md-4">
                                 <label for="laboratory_id" class="form-label">Laboratory</label>
-                                <select class="form-select" id="laboratory_id" wire:model="laboratory_id">
+                                <select class="form-select select2" id="laboratory_id" wire:model="laboratory_id">
                                     <option selected value="">Select</option>
                                     @forelse ($laboratories as $laboratory)
                                         <option value='{{ $laboratory->id }}'>{{ $laboratory->laboratory_name }}
@@ -365,7 +366,7 @@
                             </div>
                             <div class="mb-3 col-md-4">
                                 <label for="designation_id" class="form-label">Designation</label>
-                                <select class="form-select" id="designation_id" wire:model="designation_id">
+                                <select class="form-select select2" id="designation_id" wire:model="designation_id">
                                     @if (!$designations->isEmpty())
                                         <option selected value="">Select/None</option>
                                         @foreach ($designations as $designation)
@@ -397,7 +398,8 @@
                             </div>
                             <div class="mb-3 col-md-4">
                                 <label for="isActive" class="form-label">Status</label>
-                                <select class="form-select" id="isActive" name="is_active" wire:model="is_active">
+                                <select class="form-select select2" id="isActive" name="is_active"
+                                    wire:model="is_active">
                                     <option selected value="">Select</option>
                                     <option value='1'>Active</option>
                                     <option value='0'>Inactive</option>

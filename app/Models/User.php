@@ -91,7 +91,7 @@ class User extends Authenticatable
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->title.'. '.$this->surname.' '.$this->first_name.' '.$this->other_name,
+            get: fn () => $this->surname.' '.$this->first_name.' '.$this->other_name,
         );
     }
 

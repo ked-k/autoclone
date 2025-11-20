@@ -19,6 +19,10 @@ return new class extends Migration
             $table->unsignedBigInteger('test_id');
             $table->string('result')->nullable();
             $table->string('attachment')->nullable();
+            $table->text('parameters')->nullable();
+            $table->foreignId('kit_id')->nullable();
+            $table->string('verified_lot')->nullable();
+            $table->date('kit_expiry_date')->nullable();
             $table->unsignedBigInteger('performed_by')->nullable();
             $table->text('comment')->nullable();
             $table->unsignedBigInteger('reviewed_by')->nullable();

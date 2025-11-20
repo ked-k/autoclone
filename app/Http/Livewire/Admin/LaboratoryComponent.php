@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin;
 
 use App\Exports\LaboratoriesExport;
 use App\Models\Laboratory;
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -30,6 +31,14 @@ class LaboratoryComponent extends Component
     public $is_active;
 
     public $delete_id;
+
+    public $edit_id;
+
+    public $test_approver;
+
+    public $test_reviewer;
+
+    public $lab_manger;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -67,7 +76,11 @@ class LaboratoryComponent extends Component
         $laboratory = new Laboratory();
         $laboratory->laboratory_name = $this->laboratory_name;
         $laboratory->short_code = $this->short_code;
+        $laboratory->test_approver = $this->test_approver;
+        $laboratory->test_reviewer = $this->test_reviewer;
+        $laboratory->lab_manger = $this->lab_manger;
         $laboratory->description = $this->description;
+
         $laboratory->save();
 
         $this->description = '';
@@ -85,6 +98,9 @@ class LaboratoryComponent extends Component
         $this->short_code = $laboratory->short_code;
         $this->description = $laboratory->description;
         $this->is_active = $laboratory->is_active;
+        $this->test_approver = $laboratory->test_approver;
+        $this->test_reviewer = $laboratory->test_reviewer;
+        $this->lab_manger = $laboratory->lab_manger;
         $this->dispatchBrowserEvent('edit-modal');
     }
 
@@ -105,6 +121,9 @@ class LaboratoryComponent extends Component
         $laboratory->short_code = $this->short_code;
         $laboratory->description = $this->description;
         $laboratory->is_active = $this->is_active;
+        $laboratory->test_approver = $this->test_approver;
+        $laboratory->test_reviewer = $this->test_reviewer;
+        $laboratory->lab_manger = $this->lab_manger;
         $laboratory->update();
 
         $this->description = '';
@@ -158,7 +177,7 @@ class LaboratoryComponent extends Component
         $laboratories = Laboratory::search($this->search)
         ->orderBy($this->orderBy, $this->orderAsc ? 'asc' : 'desc')
         ->paginate($this->perPage);
-
-        return view('livewire.admin.laboratory-component', compact('laboratories'))->layout('layouts.app');
+        $users = User::where('is_active', true)->get();
+        return view('livewire.admin.laboratory-component', compact('laboratories','users'))->layout('layouts.app');
     }
 }

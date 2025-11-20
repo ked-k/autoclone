@@ -159,7 +159,7 @@
                                                     </strong>
                                                     <a href="{{ URL::signedRoute('batch-search-results', ['sampleReception' => $sample->sampleReception->id]) }}"
                                                         class="text-secondary"
-                                                        target="_blank">{{ $sample->sampleReception->batch_no }}
+                                                        target="_blank">{{ $sample?->sampleReception?->batch_no }}
                                                     </a><br>
                                                     <strong class="text-inverse">Accessioined By:
                                                     </strong>{{ $sample->accessioner->fullName ?? 'N/A' }}<br>
@@ -167,41 +167,52 @@
                                                     </strong>{{ date('d-m-Y H:i', strtotime($sample->created_at)) }}<br>
                                                     <strong class="text-success">Lab No:
                                                     </strong>{{ $sample->lab_no }}<br>
-                                                    <strong class="text-inverse">Tests Requested:
+                                                    <strong class="text-inverse">
+
+                                                        @if ($sample->sample_is_for=='Aliquoting')
+                                                        Aliquots
+                                                        @else
+                                                        Tests
+                                                        @endif Requested:
+
                                                     </strong>{{ count($sample->tests_requested) }}<br>
-                                                    <strong class="text-inverse">Tests Performed:
+                                                    <strong class="text-inverse">  @if ($sample->sample_is_for=='Aliquoting')
+                                                        Aliquots Obtained:
+                                                        @else
+                                                        Tests Performed:
+                                                        @endif
                                                     </strong>{{ count($sample->tests_performed ?? []) }}<br>
 
                                                 </td>
                                                 <td>
                                                     <strong class="text-inverse">Name: </strong>
-                                                    {{ $sample->sampleReception->facility->name }}<br>
+                                                    {{ $sample->sampleReception?->facility?->name??'N/A' }}<br>
                                                     <strong class="text-inverse">Study: </strong>
-                                                    {{ $sample->study->name }}<br>
+                                                    {{ $sample?->study?->name??'N/A' }}<br>
                                                     <strong class="text-inverse">Requested By:
-                                                    </strong>{{ $sample->requester->name ?? 'N/A' }}<br>
+                                                    </strong>{{ $sample?->requester?->name ?? 'N/A' }}<br>
                                                     <strong class="text-inverse">Date Requested:
                                                     </strong>{{ date('d-m-Y', strtotime($sample->date_requested)) }}<br>
                                                     <strong class="text-inverse">Courier Name:
                                                     </strong>{{ $sample->sampleReception->courier->name ?? 'N/A' }}<br>
                                                     <strong class="text-inverse">Date Delivered:
-                                                    </strong>{{ date('d-m-Y H:i', strtotime($sample->sampleReception->date_delivered)) }}<br>
+                                                    </strong>{{ date('d-m-Y H:i', strtotime($sample->sampleReception?->date_delivered)) }}<br>
                                                 </td>
                                                 <td>
                                                     <strong class="text-inverse">Participant ID:
                                                     </strong>
-                                                    <a href="{{ URL::signedRoute('participant-search-results', ['participant' => $sample->participant->id]) }}"
+                                                    <a href="{{ URL::signedRoute('participant-search-results', ['participant' => $sample->participant?->id]) }}"
                                                         class="text-secondary"
                                                         target="_blank">{{ $sample->participant->identity }}
                                                     </a><br>
                                                     <strong class="text-inverse">Sample Type:
-                                                    </strong>{{ $sample->sampleType->type ?? 'N/A' }}<br>
+                                                    </strong>{{ $sample->sampleType?->type ?? 'N/A' }}<br>
                                                     <strong class="text-inverse">Sample ID:
                                                     </strong>{{ $sample->sample_identity ?? 'N/A' }}<br>
                                                     <strong class="text-inverse">Collected By:
                                                     </strong>{{ $sample->collector->name ?? 'N/A' }}<br>
                                                     <strong class="text-inverse">Date collected:
-                                                    </strong>{{ date('d-m-Y H:i', strtotime($sample->date_collected)) }}<br>
+                                                    </strong>{{$sample->date_collected?date('d-m-Y H:i', strtotime($sample->date_collected)):'N/A'}}<br>
                                                     <strong class="text-inverse">Volume:
                                                     </strong>{{ $sample->volume ?? 'N/A' }}<br>
                                                     <strong class="text-inverse">Visit:
@@ -218,6 +229,7 @@
 
                         <div class="card-body">
                             <div>
+                                @if ($sample->sample_is_for=='Testing')
                                 <table class="table mb-0 w-100">
                                     <thead>
                                         <tr>
@@ -254,19 +266,59 @@
                                                 </td>
                                                 <td>
 
-                                                    {{ $result->performer ? $result->performer->fullName : 'N/A' }}
+                                                    {{ $result->performer ? $result?->performer->fullName : 'N/A' }}
                                                 </td>
                                                 <td>
-                                                    {{ $result->performer ? $result->reviewer->fullName : 'N/A' }}
+                                                    {{ $result->reviewer ? $result?->reviewer->fullName : 'N/A' }}
                                                 </td>
                                                 <td>
-                                                    {{ $result->performer ? $result->approver->fullName : 'N/A' }}
+                                                    {{ $result->approver ? $result?->approver->fullName : 'N/A' }}
                                                 </td>
                                             </tr>
                                         @empty
                                         @endforelse
                                     </tbody>
                                 </table>
+                                @else
+                                <table class="table mb-0 w-100">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Aliquot Type</th>
+                                            <th>Aliquot ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($sample->aliquots as $key=>$aliquot)
+                                            <tr>
+                                                <td>
+                                                    {{ $key+1}}
+                                                </td>
+                                                <td>
+                                                    <strong class="text-success">{{ $aliquot?->aliquotType->type}}</strong>
+                                                </td>
+
+                                                <td>
+                                                    <strong class="text-danger">{{ $aliquot?->aliquot_identity??'N/A'}}</strong>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                        @endforelse
+                                        <tr>
+                                            <td colspan="2">
+                                                <strong class="text-info">Performed by</strong><br>
+                                                {{ $sample->aliquotingAssignment?->performer->fullName??'N/A' }}
+                                            </td>
+                                            <td>
+                                                <strong class="text-info">Comment</strong><br>
+                                                {{ $sample->aliquotingAssignment ? $sample?->aliquotingAssignment?->comment : 'N/A' }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                @endif
+
                             </div>
                         </div>
 

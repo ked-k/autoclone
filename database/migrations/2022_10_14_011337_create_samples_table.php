@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('sample_no');
             $table->string('sample_identity');
             $table->string('lab_no')->nullable();
+            $table->unsignedBigInteger('parent_id')->nullable();;
             $table->double('volume', 8, 3)->nullable();
             $table->unsignedBigInteger('requested_by');
             $table->date('date_requested');

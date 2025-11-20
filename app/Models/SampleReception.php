@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Carbon\Carbon;
@@ -12,22 +11,22 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class SampleReception extends Model
 {
-    use HasFactory,LogsActivity;
+    use HasFactory, LogsActivity;
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly(['*'])
-        ->logFillable()
-        ->useLogName('sample_reception')
-        ->dontLogIfAttributesChangedOnly(['updated_at'])
-        ->logOnlyDirty()
-        ->dontSubmitEmptyLogs();
+            ->logOnly(['*'])
+            ->logFillable()
+            ->useLogName('sample_reception')
+            ->dontLogIfAttributesChangedOnly(['updated_at'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
         // Chain fluent methods for configuration options
     }
 
     protected $fillable = ['batch_no', 'date_delivered', 'samples_delivered', 'courier_id', 'facility_id', 'received_by', 'samples_accepted', 'samples_rejected', 'samples_handled', 'rejection_reason', 'courier_signed', 'created_by', 'creator_lab',
-        'reviewed_by', 'date_reviewed', 'comment', 'status', ];
+        'reviewed_by', 'date_reviewed', 'comment', 'status'];
 
     public function facility()
     {
@@ -54,10 +53,15 @@ class SampleReception extends Model
         return $this->hasMany(Sample::class, 'sample_reception_id', 'id');
     }
 
+    public function rejectedSamples()
+    {
+        return $this->hasMany(Sample::class, 'sample_reception_id', 'id')->where('status', 'Rejected');
+    }
+
     protected function createdAt(): Attribute
     {
         return new Attribute(
-            get: fn ($value) => Carbon::parse($value)->format('d-m-Y H:i'),
+            get: fn($value) => Carbon::parse($value)->format('d-m-Y H:i'),
             // set: fn ($value) =>  Carbon::parse($value)->format('Y-m-d'),
         );
     }
@@ -67,9 +71,9 @@ class SampleReception extends Model
         parent::boot();
         if (Auth::check()) {
             self::creating(function ($model) {
-                $model->created_by = auth()->id();
-                $model->creator_lab = auth()->user()->laboratory_id;
-                $model->reviewed_by = auth()->id();
+                $model->created_by    = auth()->id();
+                $model->creator_lab   = auth()->user()->laboratory_id;
+                $model->reviewed_by   = auth()->id();
                 $model->date_reviewed = now();
             });
         }
@@ -80,14 +84,19 @@ class SampleReception extends Model
         return empty($search) ? static::query()
         : static::query()
             ->where('creator_lab', auth()->user()->laboratory_id)
-            ->where('batch_no', 'like', '%'.$search.'%');
+            ->where('batch_no', 'like', '%' . $search . '%');
     }
 
     public static function targetSearch($search)
     {
         return empty(trim($search)) ? static::query()
-            : static::query()
-                ->where('creator_lab', auth()->user()->laboratory_id)
-                ->where('batch_no', trim($search));
+        : static::query()
+            ->where('creator_lab', auth()->user()->laboratory_id)
+            ->where('batch_no', trim($search));
     }
+    protected $casts = [
+        'date_delivered' => 'datetime',
+        'created_at'     => 'datetime',
+        'date_reviewed'  => 'datetime',
+    ];
 }

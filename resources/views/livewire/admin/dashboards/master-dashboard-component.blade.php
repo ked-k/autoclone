@@ -71,7 +71,7 @@
                     <h5 class="mb-0">Summaries</h5>
                 </div>
                 <div class="col">
-                    <select class="form-select" wire:model="laboratory_id">
+                    <select class="form-select select2" wire:model="laboratory_id">
                         <option selected value="0">All</option>
                         @forelse ($laboratories as $laboratory)
                             <option value='{{ $laboratory->id }}'>{{ $laboratory->laboratory_name }}</option>

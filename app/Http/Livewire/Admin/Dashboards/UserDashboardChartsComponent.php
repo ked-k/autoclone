@@ -63,6 +63,7 @@ class UserDashboardChartsComponent extends Component
         $currentYearTests = TestResult::select(DB::raw('COUNT(*) as count'), DB::raw('date_format(created_at,"%b") as month_name'))
         ->whereYear('created_at', date('Y'))
         ->where(['creator_lab' => auth()->user()->laboratory_id, 'created_by' => auth()->user()->id])
+        ->where('status', 'Approved')
         ->orderBy('created_at', 'asc')
         ->groupBy(DB::raw('Month(created_at)'))
             ->get();
@@ -70,6 +71,7 @@ class UserDashboardChartsComponent extends Component
         $previousYearTests = TestResult::select(DB::raw('COUNT(*) as count'), DB::raw('date_format(created_at,"%b") as month_name'))
         ->whereYear('created_at', date('Y') - 1)
         ->where(['creator_lab' => auth()->user()->laboratory_id, 'created_by' => auth()->user()->id])
+        ->where('status', 'Approved')
         ->orderBy('created_at', 'asc')
         ->groupBy(DB::raw('Month(created_at)'))
         ->get();

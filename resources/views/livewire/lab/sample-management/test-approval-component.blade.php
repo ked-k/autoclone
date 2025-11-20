@@ -22,7 +22,9 @@
                     </div>
 
                     <div class="card-body">
-                        <x-table-utilities display='d-none'>
+                        @include('livewire.partials.filter-tests')
+
+                        <x-table-utilities display='d-block'>
                             <div>
                                 <div class="d-flex align-items-center ml-4 me-2">
                                     <label for="orderBy" class="text-nowrap mr-2 mb-0">OrderBy</label>
@@ -38,11 +40,14 @@
                                     <thead>
                                         <tr>
                                             <th>No.</th>
-                                            <th>Sample Batch</th>
+                                            <th>Batch</th>
+                                            <th>Tracker</th>
                                             <th>Study</th>
-                                            <th>Participant ID</th>
+                                            <th>PID</th>
                                             <th>Sample</th>
+                                            <th>Lab no</th>
                                             <th>Test</th>
+                                            <th>TAT(HR<->MIN)</th>
                                             <th>Requester</th>
                                             <th>Requested At</th>
                                             <th>Received At</th>
@@ -53,14 +58,31 @@
                                     </thead>
                                     <tbody>
                                         @forelse ($testResults as $key => $testResult)
-                                            <tr>
+                                            <tr
+                                                class="
+                                            @if (
+                                                $testResult->test->tat != 0 &&
+                                                    $testResult->sample->created_at->diffInHours($testResult->created_at) > $testResult->test->tat) bg-light-danger @endif
+                                            ">
                                                 <td>{{ $key + 1 }}</td>
-
                                                 <td>
                                                     <a href="{{ URL::signedRoute('batch-search-results', ['sampleReception' => $testResult->sample->sampleReception->id]) }}"
                                                         class="text-secondary"
                                                         target="_blank">{{ $testResult->sample->sampleReception->batch_no }}
                                                     </a>
+                                                </td>
+                                                <td>
+                                                    @if ($testResult->amended_state)
+                                                        <a href="{{ route('print-original-report', $testResult->id) }}"
+                                                            target="_blank"><strong class="text-warning"
+                                                                title="AMENDED">{{ $testResult->tracker }}</strong>
+                                                        </a>
+                                                    @else
+                                                        <a href="{{ URL::signedRoute('report-search-results', ['testResult' => $testResult->id]) }}"
+                                                            target="_blank"><strong
+                                                                class="text-info">{{ $testResult->tracker }}</strong>
+                                                        </a>
+                                                    @endif
                                                 </td>
                                                 <td>
                                                     {{ $testResult->sample->study->name ?? 'N/A' }}
@@ -75,21 +97,25 @@
                                                 <td>
                                                     {{ $testResult->sample->sampleType->type }}
                                                 </td>
+                                                <td>
+                                                    {{ $testResult->sample->lab_no ?? '' }}
+                                                </td>
 
                                                 <td>
                                                     <a href="{{ route('result-report', $testResult->id) }}"
                                                         type="button" data-bs-toggle="tooltip"
                                                         data-bs-placement="bottom" title=""
                                                         data-bs-original-title="Preliminary Result Report"
-                                                        class="
-                                                        @if ($testResult->test->tat == 48) text-danger
-                                                        @else
-                                                        text-info @endif
-                                                        "><strong>{{ $testResult->test->name }}</strong></a>
+                                                        class="text-info"><strong>{{ $testResult->test->name }}</strong></a>
+                                                </td>
+                                                <td>
+                                                    <span
+                                                        class="text-danger fw-bold">{{ $testResult->sample->created_at->diffInHours($testResult->created_at) }}</span>
+                                                    ({{ $testResult->sample->created_at->diffInMinutes($testResult->created_at) . 'min' }})
                                                 </td>
 
                                                 <td>
-                                                    {{ $testResult->sample->requester->name }}
+                                                    {{ $testResult?->sample?->requester?->name??'N/A' }}
                                                 </td>
                                                 <td>
                                                     {{ date('d-m-Y', strtotime($testResult->sample->date_requested)) }}

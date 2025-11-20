@@ -4,14 +4,14 @@ namespace App\Exports;
 
 use App\Models\User;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithProperties;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class UsersExport implements FromCollection, WithMapping, WithHeadings,WithStyles,WithProperties
+class UsersExport implements FromCollection, WithMapping, WithHeadings, WithStyles, WithProperties
 {
     use Exportable;
 
@@ -28,15 +28,15 @@ class UsersExport implements FromCollection, WithMapping, WithHeadings,WithStyle
     public function properties(): array
     {
         return [
-            'creator'        => auth()->user()->fullName,
+            'creator' => auth()->user()->fullName,
             'lastModifiedBy' => 'Autolab',
-            'title'          => 'Users',
-            'description'    => 'Users export',
-            'subject'        => 'Users export',
-            'keywords'       => 'Autolab exports',
-            'category'       => 'Autolab Exports',
-            'manager'        => 'MakBRC IT TEAM',
-            'company'        => 'Makerere University Biomedical Research Centre',
+            'title' => 'Users',
+            'description' => 'Users export',
+            'subject' => 'Users export',
+            'keywords' => 'Autolab exports',
+            'category' => 'Autolab Exports',
+            'manager' => 'MakBRC IT TEAM',
+            'company' => 'Makerere University Biomedical Research Centre',
         ];
     }
 
@@ -80,7 +80,7 @@ class UsersExport implements FromCollection, WithMapping, WithHeadings,WithStyle
     {
         return [
             // Style the first row as bold text.
-            1    => ['font' => ['bold' => true]],
+            1 => ['font' => ['bold' => true]],
         ];
     }
 }

@@ -68,7 +68,7 @@
                                         @endif
                                         <td>{{ date('d-m-Y', strtotime($courier->created_at)) }}</td>
                                         <td class="table-action">
-                                            @if ($courier->facility->is_active == 0 || $courier->study->is_active == 0)
+                                            @if ($courier->facility->is_active == 0)
                                                 <a href="javascript: void(0);"
                                                     class="action-ico btn btn-outline-warning mx-1"
                                                     data-bs-toggle="tooltip" data-bs-placement="bottom" title=""
@@ -144,7 +144,7 @@
                             </div>
                             <div class="mb-3 col-md-5">
                                 <label for="facility" class="form-label">Facility</label>
-                                <select class="form-select" id="facility" wire:model="facility_id"
+                                <select class="form-select select2" id="facility" wire:model="facility_id"
                                     wire:change="getStudies">
                                     <option selected value="">Select</option>
                                     @forelse ($facilities as $facility)
@@ -159,7 +159,7 @@
 
                             <div class="mb-3 col-md-5">
                                 <label for="study_id" class="form-label">Study/project</label>
-                                <select class="form-select" id="study_id" wire:model="study_id">
+                                <select class="form-select select2" id="study_id" wire:model="study_id">
                                     @if ($facility_id && !$studies->isEmpty())
                                         <option selected value="">Select/None</option>
                                         @foreach ($studies as $study)
@@ -176,7 +176,8 @@
 
                             <div class="mb-3 col-md-2">
                                 <label for="isActive" class="form-label">Status</label>
-                                <select class="form-select" id="isActive" name="is_active" wire:model="is_active">
+                                <select class="form-select select2" id="isActive" name="is_active"
+                                    wire:model="is_active">
                                     <option selected value="">Select</option>
                                     <option value='1'>Active</option>
                                     <option value='0'>Inactive</option>
@@ -262,7 +263,7 @@
                             </div>
                             <div class="mb-3 col-md-5">
                                 <label for="facility2" class="form-label">Facility</label>
-                                <select class="form-select" id="facility2" wire:model="facility_id"
+                                <select class="form-select select2" id="facility2" wire:model="facility_id"
                                     wire:change="getStudies">
                                     @if ($facility_id == '')
                                         <option selected value="">None</option>
@@ -284,7 +285,7 @@
                             </div>
                             <div class="mb-3 col-md-5">
                                 <label for="study_id2" class="form-label">Study/project</label>
-                                <select class="form-select" id="study_id2" wire:model="study_id">
+                                <select class="form-select select2" id="study_id2" wire:model="study_id">
                                     @if ($facility_id && !$studies->isEmpty())
                                         <option value="">Select/None</option>
                                         @foreach ($studies as $study)
@@ -300,7 +301,8 @@
                             </div>
                             <div class="mb-3 col-md-2">
                                 <label for="isActive2" class="form-label">Status</label>
-                                <select class="form-select" id="isActive2" name="is_active" wire:model="is_active">
+                                <select class="form-select select2" id="isActive2" name="is_active"
+                                    wire:model="is_active">
                                     <option value='1'>Active</option>
                                     <option value='0'>Inactive</option>
                                 </select>

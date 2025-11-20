@@ -70,7 +70,8 @@
         <header class="no-print">
             <nav class="navbar navbar-expand-lg navbar-light bg-white rounded-0 border-bottom">
                 <div class="container">
-                    <a class="navbar-brand" href="
+                    <a class="navbar-brand"
+                        href="
                 @if (Auth::user()->hasPermission(['manager-access'])) {{ route('manager-dashboard') }}
                 @elseif (Auth::user()->hasPermission(['master-access']))
                 {{ route('master-dashboard') }}
@@ -171,8 +172,14 @@
                                                 <strong class="text-inverse">Participant ID:
                                                 </strong>{{ $participant->identity ?? 'N/A' }}<br>
                                                 <strong class="text-inverse">Age:
-                                                </strong>{{ $participant->age ?? 'N/A' }}<br>
-                                                <strong class="text-inverse">Gender:
+                                                </strong>
+                                                @if ($participant->age != null)
+                                                    {{ $participant->age }}yrs &nbsp;
+                                                @elseif ($participant->months != null)
+                                                    {{ $participant->months }}months
+                                                @else
+                                                    N/A
+                                                @endif
                                                 </strong>{{ $participant->gender ?? 'N/A' }}<br>
                                                 <strong class="text-inverse">Contact:
                                                 </strong>{{ $participant->contact ?? 'N/A' }}<br>
@@ -227,9 +234,10 @@
                                                     <strong class="text-inverse">Date Accessioned:
                                                     </strong>{{ date('d-m-Y H:i', strtotime($sample->created_at)) }}<br>
                                                     <strong class="text-success">Lab No:
-                                                    </strong>{{ $sample->lab_no }}<br>
+                                                    </strong> <a target="_blank"
+                                                        href="{{ URL::signedRoute('attach-test-results', $sample->id) }}">{{ $sample->lab_no }}</a><br>
                                                     <strong class="text-inverse">Tests Requested:
-                                                    </strong>{{ count($sample->tests_requested) }}<br>
+                                                    </strong>{{ count($sample->tests_requested ?? []) }}<br>
                                                     <strong class="text-inverse">Tests Performed:
                                                     </strong>{{ count($sample->tests_performed ?? []) }}
                                                 </td>
@@ -250,7 +258,8 @@
                                                     <strong class="text-inverse">Collected By:
                                                     </strong>{{ $sample->collector->name ?? 'N/A' }}<br>
                                                     <strong class="text-inverse">Date collected:
-                                                    </strong>{{ date('d-m-Y H:i', strtotime($sample->date_collected)) }}<br>
+                                                    </strong>
+                                                    {{ $sample->date_collected ? date('d-m-Y H:i', strtotime($sample->date_collected)) : 'N/A' }}<br>
                                                     <strong class="text-inverse">Volume:
                                                     </strong>{{ $sample->volume ?? 'N/A' }}<br>
                                                     <strong class="text-inverse">Visit:
@@ -297,13 +306,13 @@
                                                     </strong>{{ date('d-m-Y H:i', strtotime($result->created_at)) }}
                                                 </td>
                                                 <td>
-                                                    {{ $result->performer ? $result->performer->fullName : 'N/A' }}
+                                                    {{ $result->performer ? $result->performer->fullName ?? '' : 'N/A' }}
                                                 </td>
                                                 <td>
-                                                    {{ $result->performer ? $result->reviewer->fullName : 'N/A' }}
+                                                    {{ $result->performer ? $result->reviewer->fullName ?? '' : 'N/A' }}
                                                 </td>
                                                 <td>
-                                                    {{ $result->performer ? $result->approver->fullName : 'N/A' }}
+                                                    {{ $result->performer ? $result->approver->fullName ?? '' : 'N/A' }}
                                                 </td>
                                             </tr>
                                         @empty

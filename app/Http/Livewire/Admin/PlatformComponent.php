@@ -48,27 +48,36 @@ class PlatformComponent extends Component
     public function updated($fields)
     {
         $this->validateOnly($fields, [
-            'name' => 'required|unique:platforms',
+            'name' => 'required',
             'is_active' => 'required',
         ]);
     }
 
     public function storeData()
     {
-        $this->validate([
-            'name' => 'required|unique:platforms',
-            'is_active' => 'required',
-        ]);
+        $isExist = Platform::select('*')
+        ->where([['name', $this->name], ['creator_lab', auth()->user()->laboratory_id]])
+        ->exists();
+        if ($isExist) {
+            $this->name = '';
+            $this->dispatchBrowserEvent('close-modal');
+            $this->dispatchBrowserEvent('alert', ['type' => 'warning',  'message' => 'Platiform name already exists!']);
+        } else {
+            $this->validate([
+                'name' => 'required',
+                'is_active' => 'required',
+            ]);
 
-        $platform = new Platform();
-        $platform->name = $this->name;
-        $platform->range = $this->range;
-        $platform->is_active = $this->is_active;
-        $platform->save();
+            $platform = new Platform();
+            $platform->name = $this->name;
+            $platform->range = $this->range;
+            $platform->is_active = $this->is_active;
+            $platform->save();
 
-        $this->reset(['name', 'range', 'is_active']);
-        $this->dispatchBrowserEvent('close-modal');
-        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Platform created successfully!']);
+            $this->reset(['name', 'range', 'is_active']);
+            $this->dispatchBrowserEvent('close-modal');
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Platform created successfully!']);
+        }
     }
 
     public function editdata($id)
@@ -89,7 +98,7 @@ class PlatformComponent extends Component
     public function updateData()
     {
         $this->validate([
-            'name' => 'required|unique:platforms,name,'.$this->edit_id.'',
+            'name' => 'required',
             'is_active' => 'required',
         ]);
         $platform = Platform::find($this->edit_id);

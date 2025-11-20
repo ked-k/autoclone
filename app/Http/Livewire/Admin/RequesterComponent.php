@@ -39,6 +39,8 @@ class RequesterComponent extends Component
 
     public $study_id;
 
+    public $edit_id;
+
     protected $paginationTheme = 'bootstrap';
 
     public function export()
@@ -64,7 +66,7 @@ class RequesterComponent extends Component
             'contact' => 'required',
             'email' => 'required|email:filter',
             'facility_id' => 'required',
-            'study_id' => 'required|unique:requesters',
+            'study_id' => 'required',
             'is_active' => 'required',
 
         ]);
@@ -88,7 +90,7 @@ class RequesterComponent extends Component
             // 'email' => 'required|unique:requesters|email:filter',
             'email' => 'required|email:filter',
             'facility_id' => 'required',
-            'study_id' => 'required|unique:requesters',
+            'study_id' => 'required',
             'is_active' => 'required',
         ]);
 

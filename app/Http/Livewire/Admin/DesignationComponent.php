@@ -26,6 +26,8 @@ class DesignationComponent extends Component
     public $description;
 
     public $is_active;
+    
+    public $edit_id;
 
     public $delete_id;
 

@@ -18,12 +18,13 @@
                 </style>
         <div class="row g-0">
             <div class="col-lg-6 bg-logi d-flex align-items-center justify-content-center">
-                <img src="{{ asset('autolab-assets/images/logo-min.png') }}" class="img-fluid logo" alt="">
+               
+                <img src="{{ asset('autolab-assets/images/logo-min.png') }}" width="325px" class="img-fluid logo" alt="">
             </div>
             <div class="col-lg-6">
                 <div class="card-body p-4 p-sm-5">
                     <div class="text-center">
-                        <h3 class="card-title">{{ __('USER LOGIN') }}</h3>
+                        <h3 class="card-title">{{ __('LOGIN') }}</h3>
                         <hr>
                     </div>
 

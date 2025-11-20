@@ -120,7 +120,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="type" class="form-label">Type</label>
-                                    <select class="form-select" id="type" wire:model="type">
+                                    <select class="form-select select2" id="type" wire:model="type">
                                         <option selected value="">Select</option>
                                         <option value='Institution'>Institution</option>
                                         <option value='Health Facility'>Health Facility</option>
@@ -131,7 +131,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="parent" class="form-label">Parent</label>
-                                    <select class="form-select" id="parent" wire:model="parent_id">
+                                    <select class="form-select select2" id="parent" wire:model="parent_id">
                                         <option selected value="">None</option>
                                         @forelse ($facilities as $facility)
                                             <option value='{{ $facility->id }}'>{{ $facility->name }}</option>
@@ -144,7 +144,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="isActive" class="form-label">Status</label>
-                                    <select class="form-select" id="isActive" name="is_active"
+                                    <select class="form-select select2" id="isActive" name="is_active"
                                         wire:model="is_active">
                                         <option selected value="">Select</option>
                                         <option value='1'>Active</option>
@@ -215,7 +215,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="type2" class="form-label">Type</label>
-                                    <select class="form-select" id="type2" wire:model="type">
+                                    <select class="form-select select2" id="type2" wire:model="type">
                                         <option selected value="">Select</option>
                                         <option value='Institution'>Institution</option>
                                         <option value='Health Facility'>Health Facility</option>
@@ -226,7 +226,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="parent2" class="form-label">Parent</label>
-                                    <select class="form-select" id="parent2" wire:model="parent_id">
+                                    <select class="form-select select2" id="parent2" wire:model="parent_id">
                                         @if ($parent_id == '')
                                             <option selected value="">None</option>
                                             @forelse ($facilities as $facility)
@@ -248,7 +248,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="isActive2" class="form-label">Status</label>
-                                    <select class="form-select" id="isActive2" name="is_active"
+                                    <select class="form-select select2" id="isActive2" name="is_active"
                                         wire:model="is_active">
                                         <option value='1'>Active</option>
                                         <option value='0'>Inactive</option>

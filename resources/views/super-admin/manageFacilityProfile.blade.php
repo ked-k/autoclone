@@ -113,7 +113,7 @@
                                                                     data-toggle="select2" id="facility"
                                                                     name="facility_type" required>
                                                                     <option selected value="">Select</option>
-                                                                    <option value="GOVERMENT">GOVERMENT</option>
+                                                                    <option value="GOVERNMENT">GOVERNMENT</option>
                                                                     <option value="NGO">NGO</option>
                                                                     <option value="PRIVATE">PRIVATE</option>
                                                                 </select>
@@ -218,7 +218,7 @@
                                                         </div>
                                                         <div class="modal-footer">
                                                             <x-button>{{ __('Save') }}</x-button>
-                                                            {{-- <x-button type="button" class="btn btn-danger" 
+                                                            {{-- <x-button type="button" class="btn btn-danger"
                                                                 data-bs-dismiss="modal">{{ __('Close') }}</x-button> --}}
                                                         </div>
                                                     </form>
@@ -251,12 +251,12 @@
                                         <div class="mb-3 col-md-3">
                                             <label for="facility_type2" class="form-label">Facility Type<span
                                                     class="text-danger">*</span></label>
-                                            <select class="form-select" data-toggle="select2" id="facility_type2"
-                                                name="facility_type" required>
+                                            <select class="form-select select2" data-toggle="select2"
+                                                id="facility_type2" name="facility_type" required>
 
                                                 <option selected value="{{ $profile->facility_type }}">
                                                     {{ $profile->facility_type }}</option>
-                                                <option value="GOVERMENT">GOVERMENT</option>
+                                                <option value="GOVERNMENT">GOVERNMENT</option>
                                                 <option value="NGO">NGO</option>
                                                 <option value="PRIVATE">PRIVATE</option>
                                                 <option value="OTHER">OTHER</option>

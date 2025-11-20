@@ -24,12 +24,16 @@ class Facility extends Model
         // Chain fluent methods for configuration options
     }
 
-    protected $fillable = ['name', 'type', 'parent_id', 'is_active', 'created_by', ''];
+    protected $fillable = ['name', 'type', 'parent_id', 'is_active', 'created_by', 'associated_studies'];
 
     public function parent()
     {
         return $this->belongsTo(Facility::class, 'parent_id', 'id');
     }
+
+    protected $casts = [
+        'associated_studies' => 'array',
+    ];
 
     public static function boot()
     {

@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class KitsExport implements FromCollection, WithMapping, WithHeadings,WithStyles
+class KitsExport implements FromCollection, WithMapping, WithHeadings, WithStyles
 {
     use Exportable;
 
@@ -53,7 +53,7 @@ class KitsExport implements FromCollection, WithMapping, WithHeadings,WithStyles
     {
         return [
             // Style the first row as bold text.
-            1    => ['font' => ['bold' => true]],
+            1 => ['font' => ['bold' => true]],
         ];
     }
 }

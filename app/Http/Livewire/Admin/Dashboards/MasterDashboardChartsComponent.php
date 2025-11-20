@@ -35,12 +35,6 @@ class MasterDashboardChartsComponent extends Component
         $this->loadCharts();
     }
 
-    // public function refreshCharts($lab_id){
-
-    //     $this->laboratory_id=$lab_id;
-    //     $this->loadCharts();
-    // }
-
     public function loadCharts(): void
     {
         $monthLabels['month'] = collect([]);
@@ -90,6 +84,7 @@ class MasterDashboardChartsComponent extends Component
         }, function ($query) {
             return $query;
         })
+        ->where('status', 'Approved')
         ->orderBy('created_at', 'asc')
         ->groupBy(DB::raw('Month(created_at)'))
             ->get();
@@ -101,6 +96,7 @@ class MasterDashboardChartsComponent extends Component
         }, function ($query) {
             return $query;
         })
+        ->where('status', 'Approved')
         ->orderBy('created_at', 'asc')
         ->groupBy(DB::raw('Month(created_at)'))
         ->get();

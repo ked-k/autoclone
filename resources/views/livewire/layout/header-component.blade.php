@@ -96,6 +96,7 @@
                                         value="minimal-theme" checked>
                                     <label class="form-check-label" for="Minimal">Minimal Theme</label>
                                 </div>
+                            </li>
                         </ul>
                     </li>
                 </ul>

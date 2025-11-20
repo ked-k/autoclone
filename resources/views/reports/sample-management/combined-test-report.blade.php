@@ -132,10 +132,11 @@
                     </div>
                 </div>
                 <div>
-                    <div class="card-header text-center text-danger">
+                    <div class="card-header text-center">
                         <img src="{{ asset('autolab-assets/images/headers/header.png') }}"
                             alt="Makerere University Logo" width="100%" height="200px">
-                        <h5> {{ Str::upper(auth()->user()->laboratory->laboratory_name) }}</h5>
+                        <h5 class="text-success"> {{ Str::upper(auth()->user()->laboratory->laboratory_name) }}</h5>
+                        <h5 class="fw-bold text-danger"> Result Report</h5>
                         <table class="table mb-0 w-100">
                             <tbody>
                                 <tr class="text-center">
@@ -188,7 +189,7 @@
                                                 </td>
                                                 <td>
                                                     <strong class="text-inverse">Date collected:
-                                                    </strong>{{ date('d-m-Y H:i', strtotime($sample->date_collected)) }}<br>
+                                                    </strong>{{$sample->date_collected?date('d-m-Y H:i', strtotime($sample->date_collected)):'N/A'}}<br>
                                                     <strong class="text-inverse">Date Received:
                                                     </strong>{{ date('d-m-Y H:i', strtotime($sample->sampleReception->date_delivered)) }}
                                                 </td>
@@ -234,10 +235,10 @@
                                                     {{ $result->performer ? $result->performer->fullName : 'N/A' }}
                                                 </td>
                                                 <td>
-                                                    {{ $result->performer ? $result->reviewer->fullName : 'N/A' }}
+                                                    {{ $result->reviewer ? $result->reviewer->fullName : 'N/A' }}
                                                 </td>
                                                 <td>
-                                                    {{ $result->performer ? $result->approver->fullName : 'N/A' }}
+                                                    {{ $result->approver ? $result->approver->fullName : 'N/A' }}
                                                 </td>
                                             </tr>
                                         @empty

@@ -29,12 +29,12 @@
                                         </button>
 
                                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-end">
-                                            @if (Auth::user()->hasPermission(['create-reception-info']))
+                                            {{-- @if (Auth::user()->hasPermission(['accession-samples']))
                                                 <a class="dropdown-item" href="javascript:;" data-bs-toggle="modal"
                                                     data-bs-target="#addFacility">Add Facility</a>
                                                 <a class="dropdown-item" href="javascript:;" data-bs-toggle="modal"
                                                     data-bs-target="#addCourier">Add Courier</a>
-                                            @endif
+                                            @endif --}}
                                             <a class="dropdown-item" href="javascript:;" wire:click="close()">Reset
                                                 form</a>
                                         </div>
@@ -70,8 +70,8 @@
                                     </div>
                                     <div class="mb-3 col-md-3">
                                         <label for="facility_id" class="form-label">Facility</label>
-                                        <select class="form-select" id="facility_id" wire:model="facility_id"
-                                            wire:change="getCouriers()">
+                                        <select class="form-select select2" id="facility_id" data-model="facility_id"
+                                            wire:model="facility_id">
                                             <option selected value="">Select</option>
                                             @forelse ($facilities as $facility)
                                                 <option value='{{ $facility->id }}'>{{ $facility->name }}</option>
@@ -85,7 +85,8 @@
 
                                     <div class="mb-3 col-md-3">
                                         <label for="courier_id" class="form-label">Courier</label>
-                                        <select class="form-select" id="courier_id" wire:model="courier_id">
+                                        <select class="form-select select2" id="courier_id" data-model="courier_id"
+                                            wire:model="courier_id">
                                             <option selected value="">Select</option>
                                             @forelse ($couriers as $courier)
                                                 <option value='{{ $courier->id }}'>{{ $courier->name }}</option>
@@ -114,7 +115,8 @@
                                     </div>
                                     <div class="mb-1 col-md-3">
                                         <label for="received_by" class="form-label">Received By</label>
-                                        <select class="form-select" id="received_by" wire:model="received_by">
+                                        <select class="form-select select2" id="received_by" data-model="received_by"
+                                            wire:model="received_by">
                                             <option selected value="">Select</option>
                                             @forelse ($users as $user)
                                                 <option value='{{ $user->id }}'>{{ $user->fullName }}</option>
@@ -134,6 +136,17 @@
                                                 Sign?</label>
                                         </div>
                                         @error('courier_signed')
+                                            <div class="text-danger text-small">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb- col-md-1 d-none">
+                                        <div class="form-check mt-4">
+                                            <input class="form-check-input" type="checkbox" value="1"
+                                                id="is_paternity" checked wire:model="is_paternity">
+                                            <label class="form-check-label" for="is_paternity">Is paternity
+                                                Test?</label>
+                                        </div>
+                                        @error('is_paternity')
                                             <div class="text-danger text-small">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -197,61 +210,60 @@
                                 </thead>
                                 <tbody>
                                     @forelse ($sampleReceptions as $key => $sampleReception)
-                                        @if ($sampleReception->samples_accepted != $sampleReception->samples_handled)
-                                            <tr>
-                                                <td>{{ $key + 1 }}</td>
-                                                <td>
-                                                    @if ($sampleReception->samples_handled == 0)
-                                                        <a href="javascript: void(0);" class="action-ico"
-                                                            wire:click="editdata({{ $sampleReception->id }})">{{ $sampleReception->batch_no }}
-                                                        </a>
-                                                    @else
-                                                        {{ $sampleReception->batch_no }}
-                                                    @endif
-
-                                                </td>
-                                                <td>{{ date('d-m-Y H:i', strtotime($sampleReception->date_delivered)) }}
-                                                </td>
-                                                <td>{{ $sampleReception->samples_delivered }}</td>
-                                                <td>{{ $sampleReception->facility->name }}</td>
-                                                <td>{{ $sampleReception->courier->name }}</td>
-                                                <td>{{ $sampleReception->samples_accepted }}</td>
-                                                <td>{{ $sampleReception->samples_rejected }}</td>
-                                                <td>{{ $sampleReception->receiver->fullName }}</td>
-                                                <td>{{ $sampleReception->created_at }}</td>
-                                                <td>{{ $sampleReception->samples_handled }}</td>
-                                                @if ($sampleReception->status == 'Reviewed')
-                                                    <td><span
-                                                            class="badge bg-info">{{ $sampleReception->status }}</span>
-                                                    </td>
+                                        {{-- @if ($sampleReception->samples_accepted != $sampleReception->samples_handled) --}}
+                                        <tr>
+                                            <td>{{ $key + 1 }}</td>
+                                            <td>
+                                                @if ($sampleReception->samples_handled == 0)
+                                                    <a href="javascript: void(0);" class="action-ico"
+                                                        wire:click="editdata({{ $sampleReception->id }})">{{ $sampleReception->batch_no }}
+                                                    </a>
+                                                @else
+                                                    {{ $sampleReception->batch_no }}
                                                 @endif
-                                                <td class="table-action">
-                                                    <a href="javascript:;"
-                                                        class="action-ico btn btn-outline-success mx-1"
-                                                        data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                                        title="" data-bs-original-title="View details"
-                                                        aria-label="Views" data-bs-toggle="modal"
-                                                        wire:click="showData({{ $sampleReception->id }})"
-                                                        data-bs-target="#show-data"><i class="bi bi-eye-fill"></i></a>
-                                                    @if (Auth::user()->hasPermission(['accession-samples']))
-                                                        <a href="{{ route('specimen-request', $sampleReception->batch_no) }}"
-                                                            data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                                            title="" data-bs-original-title="Accession Samples"
-                                                            class="action-ico btn btn-outline-info mx-1"> <i
-                                                                class="bi bi-pencil-square"></i></a>
-                                                    @endif
 
-                                                    @if ($sampleReception->samples_handled == 0 && Auth::user()->hasPermission(['create-reception-info']))
-                                                        <a href="javascript: void(0);" data-bs-toggle="tooltip"
-                                                            data-bs-placement="bottom" title=""
-                                                            data-bs-original-title="Delete Record"
-                                                            wire:click="deleteConfirmation({{ $sampleReception->id }})"
-                                                            class="action-ico btn btn-outline-danger mx-1">
-                                                            <i class="bi bi-trash"></i></a>
-                                                    @endif
+                                            </td>
+                                            <td>{{ date('d-m-Y H:i', strtotime($sampleReception->date_delivered)) }}
+                                            </td>
+                                            <td>{{ $sampleReception->samples_delivered }}</td>
+                                            <td style="white-space: normal">{{ $sampleReception->facility->name }}
+                                            </td>
+                                            <td>{{ $sampleReception->courier->name }}</td>
+                                            <td>{{ $sampleReception->samples_accepted }}</td>
+                                            <td>{{ $sampleReception->samples_rejected }}</td>
+                                            <td>{{ $sampleReception->receiver->fullName }}</td>
+                                            <td>{{ $sampleReception->created_at }}</td>
+                                            <td>{{ $sampleReception->samples_handled }}</td>
+                                            @if ($sampleReception->status == 'Reviewed')
+                                                <td><span class="badge bg-info">{{ $sampleReception->status }}</span>
                                                 </td>
-                                            </tr>
-                                        @endif
+                                            @endif
+                                            <td class="table-action">
+                                                <a href="javascript:;" class="action-ico btn btn-outline-success mx-1"
+                                                    data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                    title="" data-bs-original-title="View details"
+                                                    aria-label="Views" data-bs-toggle="modal"
+                                                    wire:click="showData({{ $sampleReception->id }})"
+                                                    data-bs-target="#show-data"><i class="bi bi-eye-fill"></i></a>
+                                                @if (Auth::user()->hasPermission(['accession-samples']))
+                                                    <a href="{{ route('specimen-request', $sampleReception->batch_no) }}"
+                                                        data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                        title="" data-bs-original-title="Accession Samples"
+                                                        class="action-ico btn btn-outline-info mx-1"> <i
+                                                            class="bi bi-pencil-square"></i></a>
+                                                @endif
+
+                                                @if ($sampleReception->samples_handled == 0 && Auth::user()->hasPermission(['accession-samples']))
+                                                    <a href="javascript: void(0);" data-bs-toggle="tooltip"
+                                                        data-bs-placement="bottom" title=""
+                                                        data-bs-original-title="Delete Record"
+                                                        wire:click="deleteConfirmation({{ $sampleReception->id }})"
+                                                        class="action-ico btn btn-outline-danger mx-1">
+                                                        <i class="bi bi-trash"></i></a>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        {{-- @endif --}}
                                     @empty
                                     @endforelse
                                 </tbody>
@@ -318,9 +330,9 @@
                                             {{ $review_date }}</p>
                                         <div>
                                             <h6 class="text-success">Comment</h6>
-                                            <p>{{ $comment??'N/A' }}</p>
+                                            <p>{{ $comment ?? 'N/A' }}</p>
                                         </div>
-                                </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-5">
@@ -376,7 +388,7 @@
             </div>
 
             {{-- ADD FACILITY --}}
-            <div wire:ignore.self class="modal fade" id="addFacility" data-bs-backdrop="static"
+            {{-- <div wire:ignore.self class="modal fade" id="addFacility" data-bs-backdrop="static"
                 data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -399,7 +411,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="type" class="form-label">Type</label>
-                                            <select class="form-select" id="type" wire:model="facility_type">
+                                            <select class="form-select select2"  id="type" wire:model="facility_type">
                                                 <option selected value="">Select</option>
                                                 <option value='Institution'>Institution</option>
                                                 <option value='Health Facility'>Health Facility</option>
@@ -410,7 +422,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="parent" class="form-label">Parent</label>
-                                            <select class="form-select" id="parent"
+                                            <select class="form-select select2"  id="parent"
                                                 wire:model="facility_parent_id">
                                                 <option selected value="">None</option>
                                                 @forelse ($facilities as $facility)
@@ -425,7 +437,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="isActive" class="form-label">Status</label>
-                                            <select class="form-select" id="isActive" wire:model="facility_status">
+                                            <select class="form-select select2"  id="isActive" wire:model="facility_status">
                                                 <option selected value="">Select</option>
                                                 <option value='1'>Active</option>
                                                 <option value='0'>Inactive</option>
@@ -446,10 +458,10 @@
                         </div>
                     </div> <!-- end modal content-->
                 </div> <!-- end modal dialog-->
-            </div> <!-- end modal-->
+            </div> <!-- end modal--> --}}
 
             {{-- ADD COURIER --}}
-            <div wire:ignore.self class="modal fade" id="addCourier" data-bs-backdrop="static"
+            {{-- <div wire:ignore.self class="modal fade" id="addCourier" data-bs-backdrop="static"
                 data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -487,7 +499,7 @@
                                     </div>
                                     <div class="mb-3 col-md-5">
                                         <label for="facility" class="form-label">Facility</label>
-                                        <select class="form-select" id="facility" wire:model="courierfacility"
+                                        <select class="form-select select2"  id="facility" wire:model="courierfacility"
                                             wire:change="getStudies">
                                             <option selected value="">Select</option>
                                             @forelse ($facilities as $facility)
@@ -502,7 +514,7 @@
 
                                     <div class="mb-3 col-md-5">
                                         <label for="study_id" class="form-label">Study/project</label>
-                                        <select class="form-select" id="study_id" wire:model="courierstudy">
+                                        <select class="form-select select2"  id="study_id" wire:model="courierstudy">
                                             @if ($courierfacility && !$studies->isEmpty())
                                                 <option selected value="">Select/None</option>
                                                 @foreach ($studies as $study)
@@ -519,7 +531,7 @@
 
                                     <div class="mb-3 col-md-2">
                                         <label for="isActive2" class="form-label">Status</label>
-                                        <select class="form-select" id="isActive2" wire:model="courierstatus">
+                                        <select class="form-select select2"  id="isActive2" wire:model="courierstatus">
                                             <option selected value="">Select</option>
                                             <option value='1'>Active</option>
                                             <option value='0'>Inactive</option>
@@ -539,15 +551,16 @@
                         </div>
                     </div> <!-- end modal content-->
                 </div> <!-- end modal dialog-->
-            </div> <!-- end modal-->
+            </div> <!-- end modal--> --}}
         @endif
 
         @push('scripts')
+            @include('livewire.layout.select-2')
             <script>
                 window.addEventListener('close-modal', event => {
                     $('#show-data').modal('hide');
-                    $('#addFacility').modal('hide');
-                    $('#addCourier').modal('hide');
+                    // $('#addFacility').modal('hide');
+                    // $('#addCourier').modal('hide');
                     $('#delete_modal').modal('hide');
                     $('#show-delete-confirmation-modal').modal('hide');
                 });

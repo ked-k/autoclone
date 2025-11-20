@@ -18,7 +18,7 @@
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-patients" type="button"><i
                         class="bi bi-person-workspace"></i></button>
             </li>
-           
+
             <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Sample Referral">
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-referrals" type="button"><i
                         class="bi bi-airplane-fill"></i></button>
@@ -27,7 +27,7 @@
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-storage" type="button"><i
                         class="bi bi-archive-fill"></i></button>
             </li>
-            
+
             <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Logistic Management">
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-logistics" type="button"><i
                         class="bi bi-bar-chart-line-fill"></i></button>
@@ -108,7 +108,9 @@
                             <h5 class="mb-0">Sample Mgt</h5>
                         </div>
                     </div>
-                    <a href="{{ route('samplereception') }}" class="list-group-item"><i
+                    <a href="{{ route('nimsamplereception') }}" class="list-group-item"><i
+                            class="bi bi-box2"></i>Nims Reception</a>
+                               <a href="{{ route('samplereception') }}" class="list-group-item"><i
                             class="bi bi-box2"></i>Reception</a>
                     <a href="javascript: void(0);"
                         class="list-group-item {{ Request::routeIs('specimen-request') ? 'active' : '' }}"><i
@@ -168,7 +170,7 @@
                     <a href="javascript: void(0);" class="list-group-item"><i class="bi bi-cast"></i>All stored</a>
                 </div>
             </div>
-           
+
             <div class="tab-pane fade" id="pills-logistics">
                 <div class="list-group list-group-flush">
                     <div class="list-group-item">
@@ -201,7 +203,7 @@
                             class="bi bi-person-x"></i>Permissions</a>
                     <a href="{{ route('user-roles-assignment.index') }}" class="list-group-item"><i
                             class="bi bi-card-checklist"></i>Role Assiginment</a>
-                    <a href="{{ route('logs') }}" class="list-group-item"><i class="bi bi-list-check"></i>Login 
+                    <a href="{{ route('logs') }}" class="list-group-item"><i class="bi bi-list-check"></i>Login
                         Activity</a>
                     <a href="{{route('useractivity')}}" class="list-group-item"><i class="bi bi-list-columns"></i>User
                         Activity</a>

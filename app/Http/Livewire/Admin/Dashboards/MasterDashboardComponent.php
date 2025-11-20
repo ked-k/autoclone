@@ -64,28 +64,28 @@ class MasterDashboardComponent extends Component
                                         $query->where('creator_lab', $this->laboratory_id);
                                     }, function ($query) {
                                         return $query;
-                                    })->where('status', 'Tests Done')->whereDay('updated_at', '=', date('d'))->count();
+                                    })->whereDay('created_at', '=', date('d'))->count();
 
         $count['samplesThisWeekCount'] = Sample::select('*')
                                     ->when($this->laboratory_id != 0, function ($query) {
                                         $query->where('creator_lab', $this->laboratory_id);
                                     }, function ($query) {
                                         return $query;
-                                    })->where('status', 'Tests Done')->whereBetween('updated_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
+                                    })->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
 
         $count['samplesThisMonthCount'] = Sample::select('*')
                                         ->when($this->laboratory_id != 0, function ($query) {
                                             $query->where('creator_lab', $this->laboratory_id);
                                         }, function ($query) {
                                             return $query;
-                                        })->where('status', 'Tests Done')->whereMonth('updated_at', '=', date('m'))->count();
+                                        })->whereMonth('created_at', '=', date('m'))->count();
 
         $count['samplesThisYearCount'] = Sample::select('*')
                                     ->when($this->laboratory_id != 0, function ($query) {
                                         $query->where('creator_lab', $this->laboratory_id);
                                     }, function ($query) {
                                         return $query;
-                                    })->where('status', 'Tests Done')->whereYear('updated_at', '=', date('Y'))->count();
+                                    })->whereYear('created_at', '=', date('Y'))->count();
 
         //TESTS
         $count['testsPerformedCount'] = TestResult::select('*')

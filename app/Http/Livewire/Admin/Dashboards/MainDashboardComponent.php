@@ -36,10 +36,10 @@ class MainDashboardComponent extends Component
         $count['participantCount'] = Sample::where('creator_lab', auth()->user()->laboratory_id)->distinct()->count('participant_id');
         $count['batchesCount'] = SampleReception::where('creator_lab', auth()->user()->laboratory_id)->whereRaw('samples_accepted=samples_handled')->count();
         $count['samplesCount'] = Sample::where('creator_lab', auth()->user()->laboratory_id)->count();
-        $count['samplesTodayCount'] = Sample::where('creator_lab', auth()->user()->laboratory_id)->where('status', 'Tests Done')->whereDay('updated_at', '=', date('d'))->count();
-        $count['samplesThisWeekCount'] = Sample::where('creator_lab', auth()->user()->laboratory_id)->where('status', 'Tests Done')->whereBetween('updated_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
-        $count['samplesThisMonthCount'] = Sample::where('creator_lab', auth()->user()->laboratory_id)->where('status', 'Tests Done')->whereMonth('updated_at', '=', date('m'))->count();
-        $count['samplesThisYearCount'] = Sample::where('creator_lab', auth()->user()->laboratory_id)->where('status', 'Tests Done')->whereYear('updated_at', '=', date('Y'))->count();
+        $count['samplesTodayCount'] = Sample::where('creator_lab', auth()->user()->laboratory_id)->whereDay('created_at', '=', date('d'))->count();
+        $count['samplesThisWeekCount'] = Sample::where('creator_lab', auth()->user()->laboratory_id)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
+        $count['samplesThisMonthCount'] = Sample::where('creator_lab', auth()->user()->laboratory_id)->whereMonth('created_at', '=', date('m'))->count();
+        $count['samplesThisYearCount'] = Sample::where('creator_lab', auth()->user()->laboratory_id)->whereYear('created_at', '=', date('Y'))->count();
 
         //TESTS
         $count['testsPerformedCount'] = TestResult::where('creator_lab', auth()->user()->laboratory_id)->where('status', 'Approved')->count();

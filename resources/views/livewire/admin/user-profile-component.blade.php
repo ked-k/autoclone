@@ -75,7 +75,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label for="title" class="form-label">Title</label>
-                                        <select class="form-select" id="title" wire:model="title">
+                                        <select class="form-select select2" id="title" wire:model="title">
                                             <option value="" selected>Select</option>
                                             <option value="Mr">Mr</option>
                                             <option value="Mrs">Mrs</option>

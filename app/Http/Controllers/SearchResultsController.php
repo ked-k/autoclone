@@ -17,10 +17,16 @@ class SearchResultsController extends Controller
         return view('reports.sample-management.batch-details', compact('sampleReception'));
     }
 
-    public function sampleSearchResults(Sample $sample)
+    public function sampleSearchResults($sampleId)
     {
-        $sample->load(['sampleReception', 'sampleReception.facility', 'sampleReception.courier', 'sampleReception.receiver', 'participant',
-            'sampleType', 'requester', 'collector', 'study', 'testResult', 'testResult.test', ]);
+        $sample = Sample::where('id',$sampleId)->orWhere('sample_identity',$sampleId)->firstOrFail();
+        if ($sample->sample_is_for == 'Testing') {
+            $sample->load(['sampleReception', 'sampleReception.facility', 'sampleReception.courier', 'sampleReception.receiver', 'participant',
+                'sampleType', 'requester', 'collector', 'study', 'testResult', 'testResult.test', ]);
+        } elseif ($sample->sample_is_for == 'Aliquoting') {
+            $sample->load(['sampleReception', 'sampleReception.facility', 'sampleReception.courier', 'sampleReception.receiver', 'participant',
+                'aliquots', 'aliquots.aliquotType', 'requester', 'collector', 'study', 'aliquotingAssignment', 'aliquotingAssignment.performer', ]);
+        }
 
         return view('reports.sample-management.sample-details', compact('sample'));
     }
@@ -50,7 +56,6 @@ class SearchResultsController extends Controller
 
     public function combinedTestResultsReport($resultIds)
     {
-        // return $resultIds;
         $samples = Sample::whereHas('testResult', function ($query) use ($resultIds) {
             $query->whereIn('id', array_unique(explode('-', $resultIds)));
         })->with(['sampleReception', 'sampleReception.facility', 'sampleReception.courier', 'sampleReception.receiver', 'participant',
@@ -61,5 +66,13 @@ class SearchResultsController extends Controller
         $qrCodeContent = implode('|', $samples->pluck('sample_identity')->toArray());
 
         return view('reports.sample-management.combined-test-report', compact('samples', 'qrCodeContent'));
+    }
+
+    public function comboReport($resultIds)
+    {
+        $testResults=TestResult::whereIn('id',array_unique(explode('-', $resultIds)))->with(['kit','performer','reviewer','approver','test', 'sample', 'sample.participant', 'sample.sampleReception',  'sample.participant.facility:id,name','sample.sampleType:id,type', 'sample.study:id,name', 'sample.requester'])->get();
+        $qrCodeContent = implode('|', $testResults->pluck('tracker')->toArray());
+
+        return view('reports.sample-management.combo-report', compact('testResults', 'qrCodeContent'));
     }
 }

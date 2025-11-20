@@ -112,9 +112,27 @@
                                     @enderror
                                 </div>
 
+                                {{-- <div class="mb-3">
+                                    <label for="lot_no" class="form-label">Lot Number</label>
+                                    <input type="text" id="lot_no" class="form-control" name="lot_no"
+                                        wire:model.lazy="lot_no">
+                                    @error('lot_no')
+                                        <div class="text-danger text-small">{{ $message }}</div>
+                                    @enderror
+                                </div> --}}
+
+                                {{-- <div class="mb-3">
+                                    <label for="exp" class="form-label">Expiry date</label>
+                                    <input type="date" id="expiry_date" class="form-control" name="expiry_date"
+                                        wire:model.lazy="expiry_date">
+                                    @error('expiry_date')
+                                        <div class="text-danger text-small">{{ $message }}</div>
+                                    @enderror
+                                </div> --}}
+
                                 <div class="mb-3">
                                     <label for="platform_id" class="form-label">Platform</label>
-                                    <select class="form-select" id="platform_id" wire:model="platform_id">
+                                    <select class="form-select select2" id="platform_id" wire:model="platform_id">
                                         <option selected value="">Select</option>
                                         @forelse ($platforms as $platform)
                                             <option value='{{ $platform->id }}'>{{ $platform->name }}</option>
@@ -127,7 +145,8 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="isActive" class="form-label">Status</label>
-                                    <select class="form-select" id="isActive" name="is_active" wire:model="is_active">
+                                    <select class="form-select select2" id="isActive" name="is_active"
+                                        wire:model="is_active">
                                         <option selected value="">Select</option>
                                         <option value='1'>Active</option>
                                         <option value='0'>Inactive</option>
@@ -200,7 +219,7 @@
 
                                 <div class="mb-3">
                                     <label for="platform2" class="form-label">Platform</label>
-                                    <select class="form-select" id="platform2" wire:model="platform_id">
+                                    <select class="form-select select2" id="platform2" wire:model="platform_id">
                                         @if ($platform_id == '')
                                             <option selected value="">None</option>
                                             @forelse ($platforms as $platform)
@@ -222,7 +241,7 @@
 
                                 <div class="mb-3">
                                     <label for="isActive2" class="form-label">Status</label>
-                                    <select class="form-select" id="isActive2" name="is_active"
+                                    <select class="form-select select2" id="isActive2" name="is_active"
                                         wire:model="is_active">
                                         <option selected value="">Select</option>
                                         <option value='1'>Active</option>

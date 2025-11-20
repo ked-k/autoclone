@@ -40,9 +40,9 @@
                                         <tr>
                                             <th>No.</th>
                                             <th>Tracker</th>
-                                            <th>Sample Batch</th>
+                                            <th>Batch</th>
                                             <th>Study</th>
-                                            <th>Participant ID</th>
+                                            <th>PID</th>
                                             <th>Sample</th>
                                             <th>Test</th>
                                             <th>Requester</th>
@@ -82,7 +82,7 @@
                                                     {{ $testResult->test->name }}
                                                 </td>
                                                 <td>
-                                                    {{ $testResult->sample->requester->name }}
+                                                    {{ $testResult?->sample?->requester?->name??'N/A' }}
                                                 </td>
                                                 <td>
                                                     {{ date('d-m-Y', strtotime($testResult->sample->date_requested)) }}

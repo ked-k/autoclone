@@ -24,7 +24,7 @@ class SampleType extends Model
         // Chain fluent methods for configuration options
     }
 
-    protected $fillable = ['type', 'status', 'possible_tests', 'created_by', 'creator_lab'];
+    protected $fillable = ['type', 'status', 'possible_tests', 'possible_aliquots', 'created_by', 'creator_lab'];
 
     /**
      * The attributes that should be cast.
@@ -33,6 +33,7 @@ class SampleType extends Model
      */
     protected $casts = [
         'possible_tests' => 'array',
+        'possible_aliquots' => 'array',
     ];
 
     public static function boot()

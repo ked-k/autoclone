@@ -25,8 +25,18 @@
                         <strong class="text-inverse">Sample ID: </strong>{{ $testResults->sample->sample_identity }}<br>
                         <strong class="text-inverse">Name:
                         </strong>{{ $testResults->sample->participant->surname ?? 'N/A' }}<br>
-                        <strong class="text-inverse">Age: </strong>{{ $testResults->sample->participant->age }}<b>
+                        <strong class="text-inverse">Age: </strong>
+                        @if ($testResults->sample->participant->age != null)
+                            {{ $testResults->sample->participant->age }}yrs
+                        @elseif ($testResults->sample->participant->months != null)
+                            &nbsp; {{ $testResults->sample->participant->months }} Months
+                        @else
+                            N/A
+                        @endif
+                        <b>
                             Gender: </b>{{ $testResults->sample->participant->gender }}<br>
+                        <strong class="text-inverse">Address:
+                        </strong>{{ $testResults->sample->participant->address ?? 'N/A' }}<br>
                         <strong class="text-inverse">Study Name:
                         </strong>{{ $testResults->sample->study->name ?? 'N/A' }}<br>
                     </div>
@@ -36,26 +46,44 @@
                 <div class="">
                     <strong>REQUESTER</strong>
                     <div class="">
-                        <strong class="text-inverse">Name: </strong>{{ $testResults->sample->requester->name }}<br>
+                        <strong class="text-inverse">Name: </strong>{{ $testResults->sample?->requester?->name??'N/A' }}<br>
                         <strong class="text-inverse">Telephone:
-                        </strong>{{ $testResults->sample->requester->contact }}<br>
-                        <strong class="text-inverse">Email: </strong>{{ $testResults->sample->requester->email }}<br>
+                        </strong>{{ $testResults->sample?->requester?->contact ??'N/A' }}<br>
+                        <strong class="text-inverse">Email: </strong>{{ $testResults->sample?->requester?->email??'N/A' }}<br>
                         <strong class="text-inverse">Date Requested:
                         </strong>{{ date('d-m-Y', strtotime($testResults->sample->date_requested)) }}<br>
                         <strong class="text-inverse">Organisation: </strong>
-                        {{ $testResults->sample->requester->facility->name }}
+                        {{ $testResults->sample?->requester?->facility->name??'N/A' }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="card-body">
+        @if ($testResults->amended_state)
+            <div class="alert border-0 bg-warning-info show">
+                <div class="d-flex align-items-center text-danger">
+                    <div class="fs-3"><i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <div class="ms-3">
+                        <div>Please note that this is an amended result with comment--></div>
+                    </div>
+                    <div class="ms-3 text-info">
+                        <div>{{ $testResults->amendment_comment }}</div>
+                    </div>
+                    <a target="_blank" href="{{ route('print-original-report', $testResults->id) }}"
+                        class="action-ico btn btn-outline-success"><i class="bi bi-eye"></i>Original results</a>
+                </div>
+            </div>
+        @endif
+
         <div class="table-responsive">
             <table class="table">
                 <tbody>
                     <tr>
                         <td colspan="2">
-                            <strong class="text-inverse">Test Requested: </strong>{{ $testResults->test->name }}
+                            <strong class="text-inverse">Test Requested:
+                            </strong>{{ $testResults->test->name }}
                         </td>
                         <td>
                             <strong class="text-inverse">Sample Type:
@@ -65,37 +93,129 @@
                     <tr>
                         <td colspan="">
                             <strong class="text-inverse">Collection Date:
-                            </strong>{{ date('d-m-Y', strtotime($testResults->sample->date_collected)) }}
+                            </strong>{{ $testResults->sample->date_collected ? date('d-m-Y H:i', strtotime($testResults->sample->date_collected)) : 'N/A' }}
                         </td>
                         <td>
                             <strong class="text-inverse">Date Received:
                             </strong>{{ date('d-m-Y H:i', strtotime($testResults->sample->sampleReception->date_delivered)) }}
                         </td>
                         <td>
-                            <strong class="text-inverse">Result Date: </strong>{{ $testResults->created_at }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">
-                            <strong class="text-inverse">Result:
+                            <strong class="text-inverse">Result Date:
                             </strong>
-                            @if ($testResults->result)
-                                {{ $testResults->result }}
+                            @if ($testResult->amended_state)
+                                {{ date('d-m-Y H:i', strtotime($testResult->amended_at)) }}
                             @else
-                                <a href="{{ route('attachment.download', $testResults->id) }}">See Attachment</a>
+                                {{ date('d-m-Y H:i', strtotime($testResult->created_at)) }}
                             @endif
                         </td>
                     </tr>
+                    @if ($testResults->test->result_type === 'Multiple')
+                        <tr>
+                            <table class="table nowrap w-100 table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Test</th>
+                                        <th>Result</th>
+                                        <th>Ct Value</th>
+                                        <th>Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $test_results = json_decode($testResults->result, true);
+                                    @endphp
+                                    @foreach ($test_results as $result)
+                                        <tr>
+                                            <td>{{ $result['test'] ?? 'N/A' }}</td>
+                                            <td>{{ $result['result'] ?? 'N/A' }}</td>
+                                            <td>{{ $result['CtValue'] ?? 'N/A' }}</td>
+                                            <td>{{ $result['comment'] ?? 'N/A' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </tr>
+                    @else
+                        <tr>
+                            @if ($testResults->parameters != null && $testResults->test->result_presentation == 'Tabular')
+                                <table class="table nowrap w-100 table-bordered">
+                                    <thead>
+                                        @if ($testResults->test->parameter_uom)
+                                            <tr>
+                                                <th colspan="{{ count($testResults->parameters) + 1 }}">
+                                                    {{ $testResults->test->parameter_uom }}
+                                                </th>
+
+                                            </tr>
+                                        @endif
+                                        <tr>
+                                            @foreach (array_keys($testResults->parameters) as $key)
+                                                <th>
+                                                    {{ $key }}
+                                                </th>
+                                            @endforeach
+                                            <th>
+                                                Result
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            @foreach (array_values($testResults->parameters) as $parameter)
+                                                <td>
+                                                    {{ $parameter }}
+                                                </td>
+                                            @endforeach
+                                            <td>
+                                                {{ $testResults->result }}
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            @elseif($testResults->parameters != null && $testResults->test->result_presentation == 'Non-Tabular')
+                                <td class="btop" style="width:60%; color:#1A2232">
+                                    <div><b style="font-size: 18px">Results:</b>
+                                        @if ($testResults->result)
+                                            <span>{{ $testResults->result }}</span>
+                                        @else
+                                            <a href="{{ route('attachment.download', $testResults->id) }}">See
+                                                Attachment</a>
+                                        @endif
+                                        <br>
+                                        @foreach ($testResults->parameters as $key => $parameter)
+                                            <i>{{ $key }}</i> :{{ $parameter }}<br>
+                                        @endforeach
+                                    </div>
+                                </td>
+                            @else
+                                <td colspan="3">
+                                    <strong class="text-inverse">Result:
+                                    </strong>
+                                    @if ($testResults->result)
+                                        {{ $testResults->result }}
+                                    @else
+                                        <a href="{{ route('attachment.download', $testResults->id) }}">See
+                                            Attachment</a>
+                                    @endif
+                                </td>
+                            @endif
+                        </tr>
+
+                    @endif
                 </tbody>
             </table>
         </div>
-
-        <div class="row bg-light align-items-center m-0">
-            <strong class="text-inverse">Comments:</strong>
-            <p>{{ $testResults->comment }}</p>
+        @if ($testResults->test->result_type != 'Multiple')
+            <div class="row bg-light align-items-center m-0">
+                <strong class="text-inverse">Comments:</strong>
+                <p>{{ $testResults->comment }}</p>
+            </div>
+            <!--end row-->
+        @endif
+        <hr>
+        <div class="row row-cols-1 row-cols-lg-3">
+            <div class="col"><b>Kit Used:</b> {{ $testResult->kit->name ?? 'N/A' }}</div>
+            <div class="col"><b>Verified Kit Lot:</b> {{ $testResult->verified_lot ?? 'N/A' }}</div>
+            <div class="col"><b>Kit Expiry Date:</b> {{ $testResult->kit_expiry_date ?? 'N/A' }}</div>
         </div>
-        <!--end row-->
-
         <hr>
         <div class="my-3">
             <div class="row row-cols-1 row-cols-lg-3">
@@ -117,12 +237,12 @@
                                 <div class="alert border-0 bg-light-info show">
                                     <div
                                         class="d-flex align-items-center @if ($testResults->status == 'Rejected' && $testResults->approver == null) text-danger
-                                    @else
-                                    text-success @endif">
+                            @else
+                            text-success @endif">
                                         <div class="fs-3"><i
                                                 class="bi @if ($testResults->status == 'Rejected' && $testResults->approver == null) bi-x-circle-fill
-                                        @else
-                                        bi-check-circle-fill @endif"></i>
+                                @else
+                                bi-check-circle-fill @endif"></i>
                                         </div>
                                         <div class="ms-3">
                                             <div>{{ $testResults->reviewer_comment }}</div>
@@ -130,7 +250,7 @@
                                     </div>
                                 </div>
                             @endif
-                        @else
+                        @elseif($testResults->reviewer == null && $testResults->status != 'Rejected')
                             <form>
                                 <div class="row">
                                     <div class="mb-1 col-12">
@@ -216,6 +336,7 @@
         </p>
     </div>
 </div>
+
 @if ($testResults->status == 'Rejected')
     <div class="row">
         <div class="col-12">
@@ -233,7 +354,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @if ($test)
+                    @if (isset($test) && $test)
                         <div class="row">
                             <div class="mb-0">
                                 <div class="table-responsive">
@@ -251,12 +372,12 @@
                                                 <td>
                                                     <form wire:submit.prevent="updateResult()" class="me-2">
                                                         <div class="row">
-                                                            <div class="col-md-5">
+                                                            <div class="col">
                                                                 @if ($test->result_type == 'Absolute')
                                                                     <div class="mb-2">
                                                                         <label class="form-label">Result</label>
-                                                                        <select class="form-select" id="result"
-                                                                            wire:model.lazy="result">
+                                                                        <select class="form-select select2"
+                                                                            id="result" wire:model.lazy="result">
                                                                             <option selected value="">
                                                                                 Select</option>
                                                                             @foreach ($test->absolute_results as $result)
@@ -328,12 +449,12 @@
                                                             </div>
 
                                                             {{-- COMMENTS --}}
-                                                            <div class="col-md-5">
+                                                            <div class="col">
                                                                 <div class="mb-2">
                                                                     <label class="form-label">Comment</label>
                                                                     @if ($test->comments != null)
-                                                                        <select class="form-select" id="comment"
-                                                                            wire:model="comment">
+                                                                        <select class="form-select select2"
+                                                                            id="comment" wire:model="comment">
                                                                             <option selected value="">
                                                                                 Select</option>
                                                                             @foreach ($test->comments as $comment)
@@ -351,40 +472,95 @@
                                                                     @enderror
                                                                 </div>
                                                             </div>
-                                                            {{-- <div class="col-md-3">
+                                                        </div>
+                                                        {{-- PARAMETERS --}}
+                                                        @if (count($testParameters) > 0)
+                                                            <div class="row">
+                                                                <hr>
+                                                                <h6>Parameters</h6>
+                                                                @foreach ($testParameters as $parameter => $value)
+                                                                    <div class="col">
+                                                                        <div class="mb-2">
+                                                                            <label
+                                                                                class="form-label">{{ $parameter }}</label>
+                                                                            <input type="text" class="form-control"
+                                                                                wire:model.lazy="testParameters.{{ $parameter }}"
+                                                                                placeholder="{{ $value }}">
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                                @error('testParameters')
+                                                                    <div class="text-danger text-small">
+                                                                        {{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+                                                        @endif
+                                                        {{-- KIT USED --}}
+
+                                                        <div class="row">
+                                                            <hr>
+                                                            <h6>Kit Used</h6>
+                                                            <div class="col">
                                                                 <div class="mb-2">
-                                                                    <label class="form-label">Performed
-                                                                        By</label>
-                                                                    <select class="form-select"
-                                                                        wire:model="performed_by">
+                                                                    <label class="form-label">Kit Used</label>
+                                                                    <select class="form-select select2"
+                                                                        wire:model="kit_id">
                                                                         <option selected value="">Select
                                                                         </option>
-                                                                        <option value="{{ auth()->user()->id }}">
-                                                                            {{ auth()->user()->fullName }}
-                                                                        </option>
-                                                                        @error('performed_by')
-                                                                            <div class="text-danger text-small">
-                                                                                {{ $message }}</div>
-                                                                        @enderror
+                                                                        @foreach ($kits as $kit)
+                                                                            <option value='{{ $kit->id }}'>
+                                                                                {{ $kit->name }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                    @error('kit_id')
+                                                                        <div class="text-danger text-small">
+                                                                            {{ $message }}</div>
+                                                                    @enderror
                                                                 </div>
-                                                            </div> --}}
-                                                            
-                                                            <div class="col-md-1 mt-4">
+                                                            </div>
+
+                                                            <div class="col">
+                                                                <div class="mb-2">
+                                                                    <label class="form-label">Verified Lot</label>
+                                                                    <textarea wire:model.lazy="verified_lot" rows="1" class="form-control"
+                                                                        placeholder="{{ __('verified lot') }}"></textarea>
+
+                                                                    @error('verified_lot')
+                                                                        <div class="text-danger text-small">
+                                                                            {{ $message }}</div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col">
+                                                                <div class="mb-2">
+                                                                    <label class="form-label">Kit expiry date</label>
+                                                                    <input type="date" name="kit_expiry_date"
+                                                                        class="form-control" id="kit_expiry_date"
+                                                                        wire:model="kit_expiry_date" required>
+                                                                    @error('kit_expiry_date')
+                                                                        <div class="text-danger text-small">
+                                                                            {{ $message }}</div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col mt-4">
                                                                 <x-button>{{ __('Save') }}</x-button>
                                                             </div>
+
                                                         </div>
                                                     </form>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
-                                </div> <!-- end preview-->
-                            </div>
-                            <hr>
+                                </div>
+                            </div> <!-- end preview-->
                         </div>
-                    @else
+                        <hr>
                     @endif
-                </div> <!-- end card body-->
+                </div> <!-- end body -->
             </div> <!-- end card -->
         </div><!-- end col-->
     </div>

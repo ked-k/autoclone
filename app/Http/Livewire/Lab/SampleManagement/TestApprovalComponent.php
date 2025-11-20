@@ -1,11 +1,19 @@
 <?php
-
 namespace App\Http\Livewire\Lab\SampleManagement;
 
-use App\Models\TestResult;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Study;
 use Livewire\Component;
+use App\Models\Facility;
+use App\Models\Admin\Test;
+use App\Models\SampleType;
+use App\Models\TestResult;
 use Livewire\WithPagination;
+use App\Services\SendResultService;
+use Illuminate\Support\Facades\URL;
+use App\Exports\TestPerformedExport;
+use Illuminate\Support\Facades\Auth;
+use App\Jobs\SendGeneralNotificationJob;
 
 class TestApprovalComponent extends Component
 {
@@ -24,9 +32,36 @@ class TestApprovalComponent extends Component
     public $testResult;
 
     public $approver_comment;
+    public $resultIds;
+    public $facility_id = 0;
+
+    public $study_id = 0;
+
+    public $sampleType;
+
+    public $test_id;
+
+    public $performed_by = 0;
+
+    public $reviewed_by = 0;
+
+    public $approved_by = 0;
+
+    public $from_date = '';
+
+    public $to_date = '';
+    public $status;
 
     protected $paginationTheme = 'bootstrap';
 
+    public function export()
+    {
+        if (count($this->resultIds) > 0) {
+            return (new TestPerformedExport($this->resultIds))->download('Tests_Performed_' . date('Y-m-d') . '_' . now()->toTimeString() . '.xlsx');
+        } else {
+            $this->dispatchBrowserEvent('not-found', ['type' => 'error', 'message' => 'Oops! No performed Tests selected for export!']);
+        }
+    }
     public function updatingSearch()
     {
         $this->resetPage();
@@ -37,16 +72,31 @@ class TestApprovalComponent extends Component
         $this->validate([
             'approver_comment' => 'required',
         ]);
-        $testResult->approved_by = Auth::id();
-        $testResult->approved_at = now();
-        $testResult->status = 'Approved';
+        $testResult->approved_by      = Auth::id();
+        $testResult->approved_at      = now();
+        $testResult->status           = 'Approved';
         $testResult->approver_comment = $this->approver_comment;
-        $testResult->update();
+        // $testResult->update();
+        $details = [
+            'subject'    => 'Auto-Lab Test',
+            'greeting'   => 'Hello, I hope this email finds you well',
+            'body'       => 'Your test Result Lab No#' . $testResult?->sample?->lab_no . ' has been approved, Please log in and take the necessary actions.',
+            'actiontext' => 'Click Here for more details',
+            'actionurl'  => URL::signedRoute('test-request'),
+            'user_id'    => $testResult->created_by,
+        ];
+        // try {
+        //     $email = SendGeneralNotificationJob::dispatch($details);
+        // } catch (\Throwable $th) {
+        // }
+        if($testResult->sample->samplereception->is_referral &&$testResult->sample->samplereception->referral_request_no){
+        app(SendResultService::class)->sendToExternalSystem($testResult->id);
+    }
         $this->emit('updateNav', 'testsPendindApprovalCount');
 
         $this->reset('approver_comment');
         $this->viewReport = false;
-        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Test Result Updated successfully!']);
+        $this->dispatchBrowserEvent('alert', ['type' => 'success', 'message' => 'Test Result Updated successfully!']);
     }
 
     public function markAsDeclined(TestResult $testResult)
@@ -55,21 +105,33 @@ class TestApprovalComponent extends Component
             'approver_comment' => 'required',
         ]);
 
-        $testResult->approved_by = Auth::id();
-        $testResult->approved_at = now();
+        $testResult->approved_by      = Auth::id();
+        $testResult->approved_at      = now();
         $testResult->approver_comment = $this->approver_comment;
-        $testResult->status = 'Rejected';
+        $testResult->status           = 'Rejected';
         $testResult->update();
         $this->emit('updateNav', 'testsPendindApprovalCount');
 
         $this->reset('approver_comment');
+        $details = [
+            'subject'    => 'Auto-Lab Test',
+            'greeting'   => 'Hello, I hope this email finds you well',
+            'body'       => 'Your test result Lab No#' . $testResult?->sample?->lab_no . ' has been Rejected, Please log in and take the necessary actions.',
+            'actiontext' => 'Click Here for more details',
+            'actionurl'  => URL::signedRoute('test-request'),
+            'user_id'    => $testResult->created_by,
+        ];
+        try {
+            $email = SendGeneralNotificationJob::dispatch($details);
+        } catch (\Throwable $th) {
+        }
         $this->viewReport = false;
-        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Test Result Updated successfully.!']);
+        $this->dispatchBrowserEvent('alert', ['type' => 'success', 'message' => 'Test Result Updated successfully.!']);
     }
 
     public function viewPreliminaryReport(TestResult $testResult)
     {
-        $this->testResult=$testResult;
+        $this->testResult = $testResult;
         $this->viewReport = true;
     }
 
@@ -77,18 +139,64 @@ class TestApprovalComponent extends Component
     {
         return redirect(request()->header('Referer'));
     }
+    public function filterTests()
+    {
+        $results = TestResult::resultSearch($this->search, 'Reviewed')
+            ->where('creator_lab', auth()->user()->laboratory_id)->with(['test', 'sample', 'sample.participant', 'sample.sampleReception', 'sample.sampleType:id,type', 'sample.study:id,name', 'sample.requester', 'sample.collector:id,name'])->where('status', 'Reviewed')
+            ->when($this->facility_id != 0, function ($query) {
+                $query->whereHas('sample.sampleReception', function ($query) {
+                    $query->where('facility_id', $this->facility_id);
+                });
+            })
+            ->when($this->study_id != 0, function ($query) {
+                $query->whereHas('sample', function ($query) {
+                    $query->where('study_id', $this->study_id);
+                });
+            })
+            ->when($this->sampleType != 0, function ($query) {
+                $query->whereHas('sample.sampleType', function ($query) {
+                    $query->where('id', $this->sampleType);
+                });
+            })
+            ->when($this->test_id != 0, function ($query) {
+                $query->where('test_id', $this->test_id);
+            })
+            ->when($this->performed_by != 0, function ($query) {
+                $query->where('performed_by', $this->performed_by);
+            })
+            ->when($this->reviewed_by != 0, function ($query) {
+                $query->where('reviewed_by', $this->reviewed_by);
+            })
+            ->when($this->status != 0, function ($query) {
+                $query->where('status', $this->status);
+            })
+            ->when($this->approved_by != 0, function ($query) {
+                $query->where('approved_by', $this->approved_by);
+            })
+            ->when($this->from_date != '' && $this->to_date != '', function ($query) {
+                $query->whereBetween('created_at', [$this->from_date, $this->to_date]);
+            });
+
+        $this->resultIds = $results->pluck('id')->toArray();
+
+        return $results;
+    }
 
     public function render()
     {
         if ($this->viewReport) {
-            $testResults = $this->testResult->load(['test', 'sample', 'sample.participant', 'sample.sampleReception', 'sample.sampleType:id,type', 'sample.study:id,name', 'sample.requester', 'sample.collector:id,name']);
+            $data['testResults'] = $this->testResult->load(['test', 'sample', 'sample.participant', 'sample.sampleReception', 'sample.sampleType:id,type', 'sample.study:id,name', 'sample.requester', 'sample.collector:id,name']);
         } else {
-            $testResults = TestResult::resultSearch($this->search, 'Reviewed')
-            ->where('creator_lab', auth()->user()->laboratory_id)->with(['test', 'sample', 'sample.participant', 'sample.sampleReception', 'sample.sampleType:id,type', 'sample.study:id,name', 'sample.requester', 'sample.collector:id,name'])->where('status', 'Reviewed')
-            ->orderBy($this->orderBy, $this->orderAsc ? 'asc' : 'desc')
-            ->paginate($this->perPage);
+            $data['testResults'] = $this->filterTests()
+                ->orderBy($this->orderBy, $this->orderAsc ? 'asc' : 'desc')
+                ->paginate($this->perPage);
         }
+        $data['users']       = User::where(['is_active' => 1, 'laboratory_id' => auth()->user()->laboratory_id])->latest()->get();
+        $data['facilities']  = Facility::whereIn('id', auth()->user()->laboratory->associated_facilities ?? [])->get();
+        $data['sampleTypes'] = SampleType::where('creator_lab', auth()->user()->laboratory_id)->orderBy('type', 'asc')->get();
+        $data['tests']       = Test::where('creator_lab', auth()->user()->laboratory_id)->orderBy('name', 'asc')->get();
+        $data['studies']     = Study::whereIn('id', auth()->user()->laboratory->associated_studies ?? [])->where('facility_id', $this->facility_id)->get();
 
-        return view('livewire.lab.sample-management.test-approval-component', compact('testResults'));
+        return view('livewire.lab.sample-management.test-approval-component', $data);
     }
 }

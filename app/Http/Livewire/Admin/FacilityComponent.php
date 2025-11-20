@@ -37,9 +37,15 @@ class FacilityComponent extends Component
 
     public $associated_facilities;
 
+    public $associated_studies=[];
+
+    public $target_facility_id;
+
     public $is_active;
 
     public $delete_id;
+    public $edit_id;
+    public $selected_facility;
 
     public $exportIds = [];
     // public $count=0;
@@ -121,6 +127,34 @@ class FacilityComponent extends Component
         }
     }
 
+    public function updatedTargetFacilityId()
+    {
+        if ($this->target_facility_id) {
+          $this->selected_facility =  $facility = Facility::where('id',$this->target_facility_id)->first();
+            $this->associated_studies = array_unique(array_merge($this->associated_studies, $facility->associated_studies??[]));
+        }
+    }
+
+    public function associateStudiesToFacility()
+    {
+        $this->validate([
+            'associated_studies' => 'required',
+        ]);
+
+        if ($this->target_facility_id) {
+            // dd($this->associated_studies);
+            $facility = Facility::findOrFail($this->target_facility_id);
+            $facility->update([
+                'associated_studies'=>array_unique(array_merge($this->associated_studies, $facility->associated_studies??[])),
+            ]);
+            // dd($facility);
+            $this->dispatchBrowserEvent('close-modal');
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Facility Information successfully updated!']);
+        }
+
+        $this->resetInputs();
+    }
+
     public function refresh()
     {
         return redirect(request()->header('Referer'));
@@ -139,7 +173,8 @@ class FacilityComponent extends Component
 
     public function resetInputs()
     {
-        $this->reset(['name', 'type', 'parent_id', 'is_active']);
+        $this->reset(['name', 'type', 'parent_id', 'is_active','target_facility_id']);
+        $this->associated_studies=[];
     }
 
     public function updateData()
@@ -212,6 +247,8 @@ class FacilityComponent extends Component
         ->orderBy($this->orderBy, $this->orderAsc ? 'asc' : 'desc')
         ->paginate($this->perPage);
 
-        return view('livewire.admin.facility-component', compact('facilities'))->layout('layouts.app');
+        $studies=Study::where('is_active', true)->get();
+
+        return view('livewire.admin.facility-component', compact('facilities','studies'))->layout('layouts.app');
     }
 }

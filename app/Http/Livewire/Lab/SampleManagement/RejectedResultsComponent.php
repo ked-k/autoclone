@@ -2,12 +2,12 @@
 
 namespace App\Http\Livewire\Lab\SampleManagement;
 
-use Livewire\Component;
 use App\Models\Admin\Test;
 use App\Models\TestResult;
-use Livewire\WithPagination;
+use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Kit;
+use Livewire\WithPagination;
 
 class RejectedResultsComponent extends Component
 {
@@ -34,10 +34,11 @@ class RejectedResultsComponent extends Component
 
     public $test;
 
+    public $testParameters=[];
+
     public $comment;
 
     protected $paginationTheme = 'bootstrap';
-
 
     //RESULTS
     public $result;
@@ -49,7 +50,7 @@ class RejectedResultsComponent extends Component
     public $attachmentPath;
 
     public $performed_by;
-
+    public $kit_expiry_date, $verified_lot, $kit_id;
 
     public function updatingSearch()
     {
@@ -58,9 +59,8 @@ class RejectedResultsComponent extends Component
 
     public function mount()
     {
-        $this->performed_by=auth()->user()->id;
+        $this->performed_by = auth()->user()->id;
     }
-
 
     public function updateResult()
     {
@@ -85,7 +85,6 @@ class RejectedResultsComponent extends Component
             if (file_exists(storage_path('app/').$testResult->attachment)) {
                 @unlink(storage_path('app/').$testResult->attachment);
             }
-
         } else {
             if ($this->test->result_type == 'File') {
                 $this->validate([
@@ -100,12 +99,11 @@ class RejectedResultsComponent extends Component
             $testResult->result = $this->link;
         } else {
             if ($this->test->result_type == 'Measurable') {
-                if ($testResult->result==$this->result) {
+                if ($testResult->result == $this->result) {
                     $testResult->result = $this->result;
-                }else{
+                } else {
                     $testResult->result = $this->result.''.$this->measurable_result_uom;
                 }
-                
             } else {
                 $testResult->result = $this->result;
             }
@@ -120,21 +118,48 @@ class RejectedResultsComponent extends Component
         $testResult->reviewer_comment = null;
         $testResult->approver_comment = null;
         $testResult->comment = $this->comment;
+        $testResult->parameters = count($this->testParameters) ? $this->testParameters : null;
+        $testResult->kit_id = $this->kit_id;
+        $testResult->verified_lot = $this->verified_lot;
+        $testResult->kit_expiry_date = $this->kit_expiry_date;
         $testResult->status = 'Pending Review';
 
-        $testResult->update();
+        $currentParameters = array_filter($this->testParameters, function ($value) {
+            return $value != null;
+        });
 
-        $this->viewReport = false;
-        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Test Result Updated successfully!']);
+        if ($this->test->parameters!=null) {
+                if (count($currentParameters) == count($this->test->parameters)) {
+                    $testResult->update();
+                    $this->viewReport = false;
+                    $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Test Result Updated successfully!']);
+                    
+                } else {
+                    $this->dispatchBrowserEvent('not-found', ['type' => 'error',  'message' => 'Please include parameter values for this result!']);
+                    $this->validate([
+                        'testParameters' => ['required'],
+                    ]);
+                }
+        }else{
+            $testResult->update();
+            $this->viewReport = false;
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Test Result Updated successfully!']);
+        }
     }
 
     public function viewPreliminaryReport(TestResult $testResult)
     {
-        $this->testResult=$testResult;
-        $this->testResultId=$testResult->id;
-        $this->result=$testResult->result;
-        $this->comment=$testResult->comment;
-        $this->test = Test::findOrFail($testResult->test_id);
+        $this->testResult = $testResult;
+        $this->testResultId = $testResult->id;
+        $this->result = $testResult->result;
+        $this->comment = $testResult->comment;
+        $this->test = $testResult->test;
+        $this->testParameters=$testResult->parameters??[];
+        $this->kit_id=$testResult->kit_id;
+        $this->verified_lot=$testResult->verified_lot;
+        $this->kit_expiry_date=$testResult->kit_expiry_date;
+
+        // dd($this->parameters);
         $this->viewReport = true;
     }
 
@@ -149,12 +174,12 @@ class RejectedResultsComponent extends Component
             $testResults = $this->testResult->load(['test', 'sample', 'sample.participant', 'sample.sampleReception', 'sample.sampleType:id,type', 'sample.study:id,name', 'sample.requester', 'sample.collector:id,name']);
         } else {
             $testResults = TestResult::resultSearch($this->search, 'Rejected')
-            ->where('status', 'Rejected')
-            ->where(['status'=>'Rejected','performed_by'=> auth()->user()->id])
+            ->where(['status' => 'Rejected', 'performed_by' => auth()->user()->id])
             ->with(['test', 'sample', 'sample.participant', 'sample.sampleReception', 'sample.sampleType:id,type', 'sample.study:id,name', 'sample.requester', 'sample.collector:id,name'])
             ->orderBy($this->orderBy, $this->orderAsc ? 'asc' : 'desc')
             ->paginate($this->perPage);
         }
-        return view('livewire.lab.sample-management.rejected-results-component',compact('testResults'));
+        $kits = Kit::where('is_active', 1)->get();
+        return view('livewire.lab.sample-management.rejected-results-component', compact('testResults','kits'));
     }
 }

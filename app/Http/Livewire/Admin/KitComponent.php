@@ -29,6 +29,7 @@ class KitComponent extends Component
     public $is_active;
 
     public $delete_id;
+    public $edit_id;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -57,20 +58,29 @@ class KitComponent extends Component
 
     public function storeData()
     {
-        $this->validate([
-            'name' => 'required',
-            'is_active' => 'required',
-        ]);
+        $isExist = Kit::select('*')
+        ->where([['name', $this->name], ['creator_lab', auth()->user()->laboratory_id], ['platform_id', $this->platform_id]])
+        ->exists();
+        if ($isExist) {
+            $this->name = '';
+            $this->dispatchBrowserEvent('close-modal');
+            $this->dispatchBrowserEvent('alert', ['type' => 'warning',  'message' => 'Kit name already exists!']);
+        } else {
+            $this->validate([
+                'name' => 'required',
+                'is_active' => 'required',
+            ]);
 
-        $kit = new Kit();
-        $kit->name = $this->name;
-        $kit->platform_id = $this->platform_id;
-        $kit->is_active = $this->is_active;
-        $kit->save();
+            $kit = new Kit();
+            $kit->name = $this->name;
+            $kit->platform_id = $this->platform_id;
+            $kit->is_active = $this->is_active;
+            $kit->save();
 
-        $this->reset(['name', 'platform_id', 'is_active']);
-        $this->dispatchBrowserEvent('close-modal');
-        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Kit created successfully!']);
+            $this->reset(['name', 'platform_id', 'is_active']);
+            $this->dispatchBrowserEvent('close-modal');
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Kit created successfully!']);
+        }
     }
 
     public function editdata($id)

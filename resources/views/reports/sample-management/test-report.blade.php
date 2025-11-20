@@ -189,7 +189,7 @@
                                     </td>
                                     <td>
                                         <strong class="text-inverse">Name:
-                                        </strong>{{ $testResult->sample->requester->name }}<br>
+                                        </strong>{{ $testResult?->sample?->requester?->name??'N/A' }}<br>
                                         <strong class="text-inverse">Telephone:
                                         </strong>{{ $testResult->sample->requester->contact }}<br>
                                         <strong class="text-inverse">Email:
@@ -220,7 +220,7 @@
                                     <tr>
                                         <td colspan="">
                                             <strong class="text-inverse">Collection Date:
-                                            </strong>{{ date('d-m-Y', strtotime($testResult->sample->date_collected)) }}
+                                            </strong>{{ $testResult->sample->date_collected ? date('d-m-Y H:i', strtotime($testResult->sample->date_collected)) : 'N/A' }}
                                         </td>
                                         <td>
                                             <strong class="text-inverse">Date Received:
@@ -228,20 +228,60 @@
                                         </td>
                                         <td>
                                             <strong class="text-inverse">Result Date:
-                                            </strong>{{ $testResult->created_at }}
+                                            </strong>
+                                            @if ($testResult->amended_state)
+                                                {{ date('d-m-Y H:i', strtotime($testResult->amended_at)) }}
+                                            @else
+                                                {{ date('d-m-Y H:i', strtotime($testResult->created_at)) }}
+                                            @endif
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3">
-                                            <strong class="text-inverse">Result:
-                                            </strong>
-                                            @if ($testResult->result)
-                                                {{ $testResult->result }}
-                                            @else
-                                                <a href="{{ route('attachment.download', $testResult->id) }}">See
-                                                    Attachment</a>
-                                            @endif
-                                        </td>
+                                        @if ($testResult->test->result_presentation == 'Tabular')
+                                            <table class="table nowrap w-100 table-bordered">
+                                                <thead>
+                                                    @if ($testResult->test->parameter_uom)
+                                                    <tr>
+                                                        <th colspan="{{count($testResult->parameters)+1}}">
+                                                            {{$testResult->test->parameter_uom}}
+                                                        </th>
+
+                                                    </tr>
+                                                    @endif
+                                                    <tr>
+                                                        @foreach (array_keys($testResult->parameters) as $key)
+                                                            <th>
+                                                                {{ $key }}
+                                                            </th>
+                                                        @endforeach
+                                                        <th>
+                                                            Result
+                                                        </th>
+                                                    </tr>
+                                                    <tr>
+                                                        @foreach (array_values($testResult->parameters) as $parameter)
+                                                            <td>
+                                                                {{ $parameter }}
+                                                            </td>
+                                                        @endforeach
+                                                        <td>
+                                                            {{ $testResult->result }}
+                                                        </td>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        @else
+                                            <td colspan="3">
+                                                <strong class="text-inverse">Result:
+                                                </strong>
+                                                @if ($testResult->result)
+                                                    {{ $testResult->result }}
+                                                @else
+                                                    <a href="{{ route('attachment.download', $testResult->id) }}">See
+                                                        Attachment</a>
+                                                @endif
+                                            </td>
+                                        @endif
                                     </tr>
                                 </tbody>
                             </table>
@@ -259,7 +299,7 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            @if ($testResult->performer->signature)
+                                            @if ($testResult->performer?->signature)
                                                 <img src="{{ asset('storage/' . $testResult->performer->signature) }}"
                                                     alt="" height="5%" width="30%"><br>
                                             @endif
@@ -269,24 +309,24 @@
                                             {{ $testResult->performer ? $testResult->performer->fullName : 'N/A' }}
                                         </td>
                                         <td>
-                                            @if ($testResult->reviewer->signature)
+                                            @if ($testResult->reviewer?->signature)
                                                 <img src="{{ asset('storage/' . $testResult->reviewer->signature) }}"
                                                     alt="" height="5%" width="30%"><br>
                                             @endif
                                             <hr>
                                             <strong>Rewiewed By</strong><br>
 
-                                            {{ $testResult->reviewer->fullName }}
+                                            {{ $testResult->reviewer?->fullName }}
                                         </td>
                                         <td>
-                                            @if ($testResult->approver->signature)
+                                            @if ($testResult->approver?->signature)
                                                 <img src="{{ asset('storage/' . $testResult->approver->signature) }}"
                                                     alt="" height="5%" width="30%"><br>
                                             @endif
                                             <hr>
                                             <strong>Approved By</strong><br>
 
-                                            {{ $testResult->approver->fullName }}
+                                            {{ $testResult->approver?->fullName }}
                                         </td>
                                         <td>
                                             {{ QrCode::size(84)->generate(

@@ -45,7 +45,7 @@ class TestCategoryComponent extends Component
     public function updated($fields)
     {
         $this->validateOnly($fields, [
-            'category_name' => 'required|unique:test_categories',
+            'category_name' => 'required',
             'description' => 'required',
 
         ]);
@@ -53,19 +53,29 @@ class TestCategoryComponent extends Component
 
     public function storeData()
     {
-        $this->validate([
-            'category_name' => 'required|unique:test_categories',
-            'description' => 'required',
-        ]);
-        $TestCategory = new TestCategory();
-        $TestCategory->category_name = $this->category_name;
-        $TestCategory->description = $this->description;
-        $TestCategory->save();
+        $isExist = TestCategory::select('*')
+        ->where('category_name', $this->category_name)
+        ->where('creator_lab', auth()->user()->laboratory_id)
+        ->exists();
+        if ($isExist) {
+            $this->category_name = '';
+            $this->dispatchBrowserEvent('close-modal');
+            $this->dispatchBrowserEvent('alert', ['type' => 'warning',  'message' => 'Test Category name already exists!']);
+        } else {
+            $this->validate([
+                'category_name' => 'required',
+                'description' => 'required',
+            ]);
+            $TestCategory = new TestCategory();
+            $TestCategory->category_name = $this->category_name;
+            $TestCategory->description = $this->description;
+            $TestCategory->save();
 
-        $this->description = '';
-        $this->category_name = '';
-        $this->dispatchBrowserEvent('close-modal');
-        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Test Category data created successfully!']);
+            $this->description = '';
+            $this->category_name = '';
+            $this->dispatchBrowserEvent('close-modal');
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Test Category data created successfully!']);
+        }
     }
 
     public function editdata($id)
@@ -91,7 +101,7 @@ class TestCategoryComponent extends Component
     public function updateData()
     {
         $this->validate([
-            'category_name' => 'required|unique:test_categories,category_name,'.$this->edit_id.'',
+            'category_name' => 'required',
             'description' => 'required',
         ]);
         $TestCategory = TestCategory::find($this->edit_id);

@@ -25,7 +25,7 @@ class Participant extends Model
         // Chain fluent methods for configuration options
     }
 
-    protected $fillable = ['participant_no', 'identity', 'age', 'gender', 'contact', 'address', 'nok_contact', 'nok_address',
+    protected $fillable = ['participant_no', 'identity', 'age', 'months', 'gender', 'contact', 'address', 'nok_contact', 'nok_address',
 
         'clinical_notes', 'title', 'nin_number', 'surname', 'first_name', 'other_name', 'nationality', 'district', 'dob', 'email', 'birth_place', 'religious_affiliation', 'occupation', 'civil_status', 'nok', 'nok_relationship',
         'facility_id', 'study_id', 'created_by', 'creator_lab', ];

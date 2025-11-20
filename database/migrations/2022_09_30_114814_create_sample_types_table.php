@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('type')->unique();
             $table->text('possible_tests')->nullable();
+            // $table->boolean('can_be_aliquot')->default(1);
+            $table->text('possible_aliquots')->nullable();
             $table->boolean('status')->default(1);
             $table->foreignId('created_by')->references('id')->on('users')->nullable()->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->unsignedBigInteger('creator_lab')->nullable();

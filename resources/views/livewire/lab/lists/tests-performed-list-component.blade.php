@@ -8,13 +8,18 @@
                             <div class="col-sm-12 mt-3">
                                 <div class="d-sm-flex align-items-center">
                                     <h5 class="mb-2 mb-sm-0">
-                                        Tests Performed
+                                        Tests Performed (<strong class="text-danger">{{ count($resultIds) }}</strong>)
                                     </h5>
                                     <div class="ms-auto">
-                                        @if (count($combinedResultsList)>=2)
-                                        <a href="javascript:;" class="btn btn-sm btn-info me-2" wire:click='combinedTestResultsReport'><i class="bi bi-list"></i>
-                                            Combined Test Report
-                                        </a>
+                                        @if (count($combinedResultsList) >= 2)
+                                            <a href="javascript:void()" class="btn btn-sm btn-info me-2"
+                                                wire:click='combinedTestResultsReport'><i class="bi bi-list"></i>
+                                                Combined Test Report
+                                            </a>
+                                            <a class="btn btn-sm btn-info me-2" target="_blank" href="javascript:void()"
+                                                wire:click ="printMultiple" {{-- href="{{ route('print-result-multi', ['session_id' => session()->getId()]) }}" --}}>
+                                                <i class="bi bi-printer"></i> Multiple Test Report
+                                            </a>
                                         @endif
                                         <a href="javascript:;" wire:click='export' class="btn btn-secondary me-2"><i
                                                 class="bi bi-file-earmark-fill"></i> Export</a>
@@ -29,110 +34,14 @@
                         <hr>
                         <div class="row mb-0">
                             <form>
-                                <div class="row">
-                                    <div class="mb-3 col-md-3">
-                                        <label for="facility_id" class="form-label">Facility</label>
-                                        <select class="form-select" id="facility_id" wire:model="facility_id">
-                                            <option selected value="0">All</option>
-                                            @forelse ($facilities as $facility)
-                                                <option value='{{ $facility->id }}'>{{ $facility->name }}</option>
-                                            @empty
-                                            @endforelse
-                                        </select>
-                                        @error('facility_id')
-                                            <div class="text-danger text-small">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="mb-3 col-md-3">
-                                        <label for="study" class="form-label">Study</label>
-                                        <select class="form-select" id="study" wire:model="study_id">
-                                            <option selected value="0">All</option>
-                                            @forelse ($studies as $study)
-                                                <option value='{{ $study->id }}'>{{ $study->name }}</option>
-                                            @empty
-                                            @endforelse
-                                        </select>
-                                        @error('study_id')
-                                            <div class="text-danger text-small">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="mb-3 col-md-2">
-                                        <label for="sampleType" class="form-label">Sample Type</label>
-                                        <select class="form-select" id="sampleType"
-                                        wire:model='sampleType'>
-                                        <option selected value="0">All</option>
-                                        @foreach ($sampleTypes as $sampleType)
-                                            <option value='{{ $sampleType->id }}'>
-                                                {{ $sampleType->type }}</option>
-                                        @endforeach
-                                    </select>
-                                        @error('job')
-                                            <div class="text-danger text-small">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="mb-3 col-md-2">
-                                        <label for="test_id" class="form-label">Test</label>
-                                        <select class="form-select" id="test_id"
-                                        wire:model='test_id'>
-                                        <option selected value="0">All</option>
-                                        @foreach ($tests as $test)
-                                            <option value='{{ $test->id }}'>
-                                                {{ $test->name }}</option>
-                                        @endforeach
-                                    </select>
-                                        @error('test')
-                                            <div class="text-danger text-small">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="mb-3 col-md-2">
-                                        <label for="from_date" class="form-label">Start Date</label>
-                                        <input id="from_date" type="date" class="form-control"
-                                            wire:model="from_date">
-                                        @error('from_date')
-                                            <div class="text-danger text-small">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="mb-3 col-md-2">
-                                        <label for="to_date" class="form-label">End Date</label>
-                                        <input id="to_date" type="date" class="form-control" wire:model="to_date">
-                                        @error('to_date')
-                                            <div class="text-danger text-small">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="mb-3 col-md-2">
-                                        <label for="perPage" class="form-label">Per Page</label>
-                                        <select wire:model="perPage" class="form-select" id="perPage">
-                                            <option value="10">10</option>
-                                            <option value="20">20</option>
-                                            <option value="30">30</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                            <option value="200">200</option>
-                                            <option value="500">500</option>
-                                            <option value="1000">1000</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3 col-md-2">
-                                        <label for="orderBy" class="form-label">OrderBy</label>
-                                        <select wire:model="orderBy" class="form-select">
-                                            <option value="approved_at">Latest</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3 col-md-2">
-                                        <label for="orderAsc" class="form-label">Order</label>
-                                        <select wire:model="orderAsc" class="form-select" id="orderAsc">
-                                            <option value="1">Asc</option>
-                                            <option value="0">Desc</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                @include('livewire.partials.filter-tests')
                                 <!-- end row-->
                             </form>
                         </div>
-                        @if (count($combinedResultsList)>=2)
-                        You have selected <strong class="text-success">{{ count($combinedResultsList) }}</strong> Test Results(s) for the combined Result report (<a href="javascript:;" class="text-info" wire:click="$set('combinedResultsList',[])">Clear All</a>)
+                        @if (count($combinedResultsList) >= 2)
+                            You have selected <strong class="text-success">{{ count($combinedResultsList) }}</strong>
+                            Test Results(s) for the combined Result report (<a href="javascript:;"
+                                class="text-danger fw-bold" wire:click="$set('combinedResultsList',[])">Clear All</a>)
                         @endif
                     </div>
 
@@ -142,13 +51,16 @@
                                 <thead>
                                     <tr>
                                         <th>No.</th>
-                                        <th>Sample Batch</th>
+                                        <th>Sample</th>
                                         <th>Tracker</th>
                                         <th>Facility</th>
                                         <th>Study</th>
-                                        <th>Participant ID</th>
+                                        <th>PID</th>
                                         <th>Sample</th>
+                                        <th>Sample ID</th>
+                                        <th>Lab No</th>
                                         <th>Test</th>
+                                        <th>TAT(HR<->MIN)</th>
                                         <th>Requester</th>
                                         <th>Result Date</th>
                                         <th>Status</th>
@@ -166,10 +78,19 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                <a href="{{ URL::signedRoute('report-search-results', ['testResult' => $testResult->id]) }}"
-                                                    target="_blank"><strong
-                                                        class="text-info">{{ $testResult->tracker }}</strong>
-                                                </a>
+                                                @if ($testResult->amended_state)
+                                                    <a href="javascript:void(0)"
+                                                        wire:click='viewAmended({{ $testResult->id }})'
+                                                        data-bs-toggle="modal" data-bs-target="#amendedResults"><strong
+                                                            class="text-warning"
+                                                            title="SHOW AMENDED">{{ $testResult->tracker }}</strong>
+                                                    </a>
+                                                @else
+                                                    <a href="{{ URL::signedRoute('report-search-results', ['testResult' => $testResult->id]) }}"
+                                                        target="_blank"><strong
+                                                            class="text-info">{{ $testResult->tracker }}</strong>
+                                                    </a>
+                                                @endif
                                             </td>
                                             <td>
                                                 {{ $testResult->sample->sampleReception->facility->name ?? 'N/A' }}
@@ -187,14 +108,24 @@
                                             <td>
                                                 {{ $testResult->sample->sampleType->type }}
                                             </td>
-
+                                            <td>
+                                                {{ $testResult->sample->sample_identity }}
+                                            </td>
+                                            <td class="text-success fw-bold">
+                                                {{ $testResult->sample->lab_no ?? 'N/A' }}
+                                            </td>
                                             <td>
                                                 {{ $testResult->test->name }}
-                                                <input type="checkbox" value="{{$testResult->id}}" class="me-2 float-end" wire:model="combinedResultsList">
+                                                <input type="checkbox" value="{{ $testResult->id }}"
+                                                    class="me-2 float-end" wire:model="combinedResultsList">
                                             </td>
-
                                             <td>
-                                                {{ $testResult->sample->requester->name }}
+                                                <span
+                                                    class="text-danger fw-bold">{{ $testResult->sample->sampleReception->date_delivered->diffInHours($testResult->created_at) }}</span>
+                                                ({{ $testResult->sample->sampleReception->date_delivered->diffInMinutes($testResult->created_at) . 'min' }})
+                                            </td>
+                                            <td>
+                                                {{ $testResult?->sample?->requester?->name??'N/A' }}
                                             </td>
                                             <td>
                                                 {{ $testResult->created_at }}
@@ -203,13 +134,21 @@
                                                 <span class="badge bg-success">{{ $testResult->status }}</span>
                                             </td>
                                             <td class="action-ico">
-                                                <a href="{{ route('result-report', $testResult->id) }}"
-                                                    type="button" data-bs-toggle="tooltip"
-                                                    data-bs-placement="bottom" title=""
-                                                    data-bs-original-title="Result Report"
-                                                    class="action-ico btn btn-outline-info"
-                                                    wire:click='incrementDownloadCount({{ $testResult->id }})'><i
-                                                        class="bi bi-arrow-down-square"></i></a>
+                                                @if (Auth::user()->hasPermission(['view-participant-info']))
+                                                    <a target="_blank"
+                                                        href="{{ route('print-result-report', $testResult->id) }}"
+                                                        type="button" data-bs-toggle="tooltip"
+                                                        data-bs-placement="bottom" title=""
+                                                        data-bs-original-title="Result Report"
+                                                        class="action-ico btn btn-outline-info btn-sm"
+                                                        wire:click='incrementDownloadCount({{ $testResult->id }})'><i
+                                                            class="bi bi-printer"></i>
+                                                        <small
+                                                            class="badge bg-info">{{ $testResult->download_count }}</small>
+                                                    </a>
+                                                @else
+                                                    NA
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -227,10 +166,18 @@
                     </div> <!-- end tab-content-->
                 </div> <!-- end card body-->
             </div> <!-- end card -->
-        </div><!-- end col-->
 
-    </div>
-    @push('scripts')
+
+            {{-- VIEW amendement details modal --}}
+            @include('livewire.lab.lists.show-amended-results')
+            <!-- end modal dialog-->
+        </div> <!-- end modal-->
+
+
+    </div><!-- end col-->
+
+</div>
+@push('scripts')
     <script>
         window.addEventListener('loadCombinedTestResultsReport', event => {
             window.open(`${event.detail.url}`, '_blank').focus();

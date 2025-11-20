@@ -121,7 +121,8 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="isActive" class="form-label">Status</label>
-                                    <select class="form-select" id="isActive" name="is_active" wire:model="is_active">
+                                    <select class="form-select select2" id="isActive" name="is_active"
+                                        wire:model="is_active">
                                         <option selected value="">Select</option>
                                         <option value='1'>Active</option>
                                         <option value='0'>Inactive</option>
@@ -200,7 +201,7 @@
 
                                 <div class="mb-3">
                                     <label for="isActive2" class="form-label">Status</label>
-                                    <select class="form-select" id="isActive2" name="is_active"
+                                    <select class="form-select select2" id="isActive2" name="is_active"
                                         wire:model="is_active">
                                         <option selected value="">Select</option>
                                         <option value='1'>Active</option>

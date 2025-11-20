@@ -56,8 +56,8 @@
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $study->name }}</td>
-                                        <td>{{ $study->description ? $study->description : 'N/A' }}</td>
-                                        <td>{{ $study->facility ? $study->facility->name : 'N/A' }}</td>
+                                        <td>{{ $study->description ? $study?->description : 'N/A' }}</td>
+                                        <td>{{ $study->facility ? $study?->facility?->name : 'N/A' }}</td>
                                         @if ($study->is_active == 0)
                                             <td><span class="badge bg-danger">Inactive</span></td>
                                         @else
@@ -65,7 +65,7 @@
                                         @endif
                                         <td>{{ date('d-m-Y', strtotime($study->created_at)) }}</td>
                                         <td class="table-action">
-                                            @if ($study->facility->is_active == 0)
+                                            @if ($study?->facility?->is_active == 0)
                                                 <a href="javascript: void(0);"
                                                     class="action-ico btn btn-outline-warning mx-1"
                                                     data-bs-toggle="tooltip" data-bs-placement="bottom" title=""
@@ -135,7 +135,7 @@
 
                                 <div class="mb-3">
                                     <label for="facility_id" class="form-label">Facility</label>
-                                    <select class="form-select" id="facility_id" wire:model="facility_id">
+                                    <select class="form-select select2" id="facility_id" wire:model="facility_id">
                                         <option selected value="">Select</option>
                                         @forelse ($facilities as $facility)
                                             <option value='{{ $facility->id }}'>{{ $facility->name }}</option>
@@ -148,7 +148,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="isActive" class="form-label">Status</label>
-                                    <select class="form-select" id="isActive" name="is_active"
+                                    <select class="form-select select2" id="isActive" name="is_active"
                                         wire:model="is_active">
                                         <option selected value="">Select</option>
                                         <option value='1'>Active</option>
@@ -227,7 +227,7 @@
 
                                 <div class="mb-3">
                                     <label for="facility2" class="form-label">Facility</label>
-                                    <select class="form-select" id="facility2" wire:model="facility_id">
+                                    <select class="form-select select2" id="facility2" wire:model="facility_id">
                                         @if ($facility_id == '')
                                             <option selected value="">None</option>
                                             @forelse ($facilities as $facility)
@@ -248,7 +248,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="isActive2" class="form-label">Status</label>
-                                    <select class="form-select" id="isActive2" name="is_active"
+                                    <select class="form-select select2" id="isActive2" name="is_active"
                                         wire:model="is_active">
                                         <option selected value="">Select</option>
                                         <option value='1'>Active</option>
@@ -288,12 +288,12 @@
                             @forelse ($studies as $study)
                                 <div class="col-md-4">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="{{ $study->id }}"
+                                        <input class="form-check-input" type="checkbox" value="{{ $study?->id }}"
                                             id="associated_studies{{ $study->id }}" checked
                                             wire:model="associated_studies">
                                         <label class="form-check-label"
                                             for="associated_studies{{ $study->id }}"><strong
-                                                class="text-info">{{ $study->name }}</strong>{{ ' (' . $study->facility->name . ')' }}</label>
+                                                class="text-info">{{ $study?->name }}</strong>{{ ' (' . $study?->facility?->name . ')' }}</label>
                                     </div>
                                 </div>
                             @empty
