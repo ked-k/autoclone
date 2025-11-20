@@ -407,7 +407,7 @@ class ReferralReceptionComponent extends Component
         // Notify central server
         $this->acceptSampleAtCentral($identity, $key);
 
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
 
         $this->dispatchBrowserEvent('alert', [
             'type' => 'error',
