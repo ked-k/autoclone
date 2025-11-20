@@ -111,12 +111,12 @@
                                         <td>
                                             <div>
                                                 <strong>{{ $request['no_of_samples'] }}</strong> samples
-                                                @if(count($request['samples'] ?? []) > 0)
+                                                {{-- @if(count($request['samples'] ?? []) > 0)
                                                     <br>
                                                     <small class="text-muted">
                                                         {{ $request['samples']->first()['specimen_type'] ?? '' }}
                                                     </small>
-                                                @endif
+                                                @endif --}}
                                             </div>
                                         </td>
                                         <td>

@@ -76,7 +76,7 @@ class TestApprovalComponent extends Component
         $testResult->approved_at      = now();
         $testResult->status           = 'Approved';
         $testResult->approver_comment = $this->approver_comment;
-        // $testResult->update();
+        $testResult->update();
         $details = [
             'subject'    => 'Auto-Lab Test',
             'greeting'   => 'Hello, I hope this email finds you well',

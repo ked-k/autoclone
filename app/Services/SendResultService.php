@@ -154,13 +154,14 @@ class SendResultService
      */
     private function sendToAPI(array $payload, ?string $sampleId)
     {
-        $url = "http://127.0.0.1:8081/api/v1/SampleReferralCrossBorder/referral/sample/{$sampleId}/add/structured-results";
+        $baseUrl = rtrim(env('CENTRAL_INSTANCE_URL', 'https://nimsdev.africacdc.org'), '/');
+        $url = "https://nimsdev.africacdc.org/api/v1/SampleReferralCrossBorder/referral/sample/{$sampleId}/add/structured-results";
 
         try {
             $response = $this->client->post($url, [
                 'headers' => [
                     'Content-Type'           => 'application/json',
-                    'X-Institution-API-Key'  => 'JZ21CHEns3wAiQ0YUju2a4qKlMKxpvjAHt8WBXMlSm9iBsf1JZx5XwwPaYLsoKAP',
+                    'X-Institution-API-Key'  => env('INSTITUTION_API_KEY')??'qrokk2a5tZIoq9AOvc8LbTA9da886ApY9fZtE9uJfBzbLEdTNO7Qo7dluy47Hfau',
                     'Accept'                 => 'application/json',
                 ],
                 'json'    => $payload,
