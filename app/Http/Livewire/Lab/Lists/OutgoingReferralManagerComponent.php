@@ -39,10 +39,10 @@ class OutgoingReferralManagerComponent extends Component
 
     protected $queryString = ['requestCode'];
 
-    public function mount($requestCode = null)
+    public function mount($batch = null)
     {
-        $this->requestCode = $requestCode;
-        if ($requestCode) {
+        $this->requestCode = $batch;
+        if ($batch) {
             $this->loadReferralRequest();
         }
     }
@@ -52,13 +52,13 @@ class OutgoingReferralManagerComponent extends Component
         $this->loading = true;
         $this->error = null;
         $this->referralRequest = null;
-
+        $link =env('CENTRAL_INSTANCE_URL')??'https://nimsdev.africacdc.org';
         try {
             $response = Http::withHeaders([
                 'X-Institution-API-Key' => env('INSTITUTION_API_KEY'),
                 'Accept' => 'application/json',
             ])->timeout(30)
-            ->get(env('CENTRAL_INSTANCE_URL') . "/api/v1/SampleReferralCrossBorder/referral/view_request/{$this->requestCode}");
+            ->get($link . "/api/v1/SampleReferralCrossBorder/referral/view_request/{$this->requestCode}");
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -67,15 +67,28 @@ class OutgoingReferralManagerComponent extends Component
                     $this->loadAvailableSamples();
                 } else {
                     $this->error = $data['message'] ?? 'Failed to load referral request';
+                           $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Failed to fetch referral request!'. $this->error
+            ]);
                 }
             } else {
+
                 $this->error = 'API request failed: ' . $response->status();
+                    $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Failed to fetch referral request!'. $this->error
+            ]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error = 'Error loading referral request: ' . $e->getMessage();
             Log::error('Error loading referral request', [
                 'request_code' => $this->requestCode,
                 'error' => $e->getMessage()
+            ]);
+                   $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Error loading referral request!'. $this->error
             ]);
         }
 
