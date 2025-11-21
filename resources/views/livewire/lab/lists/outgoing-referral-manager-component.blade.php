@@ -1,7 +1,6 @@
-<!-- resources/views/livewire/outgoing-referral-manager.blade.php -->
 <div>
     <!-- Header -->
-    <div class="card">
+    <div class="card" wire:key="referral-manager">
         <div class="card-header">
             <h5 class="card-title mb-0">
                 <i class="fas fa-exchange-alt"></i>
@@ -34,12 +33,10 @@
             </div>
 
             <!-- Loading State -->
-            @if($loading && !$referralRequest)
-                <div class="text-center py-4">
-                    <i class="fas fa-spinner fa-spin fa-2x"></i>
-                    <p class="mt-2">Loading referral request...</p>
-                </div>
-            @endif
+            <div wire:loading wire:target="loadReferralRequest" class="text-center py-4">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p class="mt-2">Loading referral request...</p>
+            </div>
 
             <!-- Error Message -->
             @if($error)
@@ -77,7 +74,7 @@
                                         <strong>Priority:</strong> {{ $referralRequest['priority'] }}
                                     </div>
                                     <div class="col-md-4">
-                                        <strong>Destination:</strong> {{ $referralRequest['destination_institution']['name'] }}<br>
+                                        <strong>Destination:</strong> {{ $referralRequest['destination_institution']['name']??'N/A' }}<br>
                                         <strong>Pending Samples:</strong>
                                         <span class="badge bg-info">{{ $pendingCount }}</span>
                                     </div>
@@ -169,8 +166,9 @@
                                                     <th>Type</th>
                                                     <th>Collection Date</th>
                                                     <th>Age/Gender</th>
-                                                    <th>Result</th>
+                                                    {{-- <th>Result</th> --}}
                                                     <th>Participant</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -186,12 +184,18 @@
                                                         <td>{{ $sample['specimen_type'] }}</td>
                                                         <td>{{ \Carbon\Carbon::parse($sample['collection_date'])->format('M d, Y') }}</td>
                                                         <td>{{ $sample['age'] }}y / {{ $sample['gender'] }}</td>
-                                                        <td>
+                                                        {{-- <td>
                                                             <span class="badge {{ $sample['test_result'] === 'Positive' ? 'bg-danger' : 'bg-success' }}">
                                                                 {{ $sample['test_result'] }}
                                                             </span>
-                                                        </td>
+                                                        </td> --}}
                                                         <td>{{ $sample['participant']['participant_no'] }}</td>
+                                                        <td>
+                                                            <button wire:click="addSingleSample({{ $sample['id'] }})"
+                                                                    class="btn btn-sm btn-primary">
+                                                                Send
+                                                            </button>
+                                                        </td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
