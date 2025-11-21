@@ -169,7 +169,7 @@
                                 <span class="badge bg-info">{{ $sample['status'] }}</span>
                         </td>
                         <td>
-                            @if(in_array($sample['status'] ,['Pending','Delivered','Rejected','Dispatched']))
+                            @if(in_array($sample['status'] ,['Pending','Delivered','Rejected','Dispatched','Received']))
                             <button wire:click="openAccessionModal({{ $index }})"
                                     class="btn btn-sm btn-primary"
                                     >

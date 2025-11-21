@@ -51,7 +51,7 @@ class ReferralReceptionComponent extends Component
     public $sample_identity;
     public $sample_type_id;
     public $volume;
-    public $sample_is_for = 'Testing';
+    public $sample_is_for = null;
     public $priority = 'Normal';
     public $tests_requested = [];
 
@@ -99,6 +99,7 @@ class ReferralReceptionComponent extends Component
 
     public function mount($batch)
     {
+        $this->sample_is_for =null;
         $this->requestCode = $batch;
          $this->fetchReferral();
            $this->tests    = collect([]);
