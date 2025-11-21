@@ -67,7 +67,7 @@
                                 <tr>
                                     <th>No.</th>
                                     <th>Request No</th>
-                                    @if(in_array($this->statusFilter, ['outgoing']))
+                                     @if($this->statusFilter == 'outgoing')
                                         <th>Receiving Institution</th>
                                     @else
                                     <th>Requester Institution</th>
@@ -93,7 +93,7 @@
                                         </td>
                                         <td>
                                             <div>
-                                                @if(in_array($this->statusFilter, ['outgoing']))
+                                                @if($this->statusFilter == 'outgoing')
                                                     <strong>{{ $request['receiving_institution']['name'] ?? 'N/A' }}</strong>
                                                     @if($request['receiving_institution']['short_code'] ?? false)
                                                         <br>
@@ -159,7 +159,7 @@
                                                 <i class="bi bi-eye"></i>
                                             </a>
 
-                                            @if(in_array(strtolower($request['status']), ['pending', 'submitted']))
+                                            @if(in_array(strtolower($request['status']), ['pending', 'submitted'] && $this->statusFilter == 'outgoing'))
                                                 <a href="javascript:void(0);"
                                                    class="action-ico btn btn-outline-warning mx-1"
                                                    data-bs-toggle="tooltip" title="Process Request">
