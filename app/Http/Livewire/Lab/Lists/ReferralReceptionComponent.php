@@ -200,7 +200,7 @@ class ReferralReceptionComponent extends Component
             ['name' => $this->referralData['requester_institution']['name']],
             [
                 'type' => 'Institution',
-                'parent_id' => 97,
+                // 'parent_id' => 97,
                 'contact' => $this->referralData['requester_institution']['contact'],
                 'email' => $this->referralData['requester_institution']['email'],
                 'country' => $this->referralData['requester_institution']['country'],
@@ -209,11 +209,11 @@ class ReferralReceptionComponent extends Component
 
         // Find or create courier
         $courier = Courier::firstOrCreate(
-            ['name' => $this->referralData['courier']['name']],
+            ['name' => $this->referralData['courier']['name']??$this->referralData['requester_institution']['name']],
             [
-                'contact' => $this->referralData['courier']['contact'],
-                'email' => $this->referralData['courier']['email'],
-                'country' => $this->referralData['courier']['country'],
+                'contact' => $this->referralData['courier']['contact']??$this->referralData['requester_institution']['contact'],
+                'email' => $this->referralData['courier']['email']??$this->referralData['requester_institution']['email'],
+                'country' => $this->referralData['courier']['country']??$this->referralData['requester_institution']['country'],
                 'facility_id' => $facility->id,
             ]
         );
