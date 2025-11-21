@@ -34,8 +34,8 @@
                             <label for="statusFilter" class="text-nowrap mr-2 mb-0">Status</label>
                             <select wire:model="statusFilter" class="form-select">
                                 <option value="all">All Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="submitted">Submitted</option>
+                                <option value="incoming">Incoming</option>
+                                <option value="outgoing">outgoing</option>
                                 <option value="completed">Completed</option>
                                 <option value="dispatched">Dispatched</option>
                                 <option value="delivered">Delivered</option>

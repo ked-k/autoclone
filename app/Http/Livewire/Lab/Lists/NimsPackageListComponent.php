@@ -15,7 +15,7 @@ class NimsPackageListComponent extends Component
     public $search = '';
     public $orderBy = 'created_at';
     public $orderAsc = false;
-    public $statusFilter = 'incoming';
+    public $statusFilter;
     public $perPage = 10;
 
     protected $queryString = [
@@ -25,8 +25,9 @@ class NimsPackageListComponent extends Component
         'perPage' => ['except' => 10],
     ];
 
-    public function mount()
+    public function mount($filiter=null)
     {
+        $this->statusFilter = $filiter ?? 'incoming';
         // You might want to get the institution from authenticated user
         $this->institution = auth()->user()->institution ?? null;
     }
