@@ -150,8 +150,8 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Sample Ref</th>
                         <th>Sample ID</th>
+                        <th>PID</th>
                         <th>Specimen Type</th>
                         <th>Age/Gender</th>
                         <th>Pathogen</th>
