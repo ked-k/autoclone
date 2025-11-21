@@ -162,7 +162,7 @@
                                                 </a>
 
                                                 @if (in_array(strtolower($request['status']), ['pending', 'submitted']) && $this->statusFilter == 'outgoing')
-                                                    <a href="javascript:void(0);"
+                                                    <a href="{{ route('referral-requests.outgoing', ['batch' => $request['request_no']])}}"
                                                         class="action-ico btn btn-outline-warning mx-1"
                                                         data-bs-toggle="tooltip" title="Process Request">
                                                         <i class="bi bi-gear"></i>

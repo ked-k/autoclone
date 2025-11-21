@@ -49,6 +49,7 @@ use App\Http\Livewire\Lab\Reports\TestStudyCountReportComponent;
 use App\Http\Livewire\Lab\SampleManagement\AssignTestsComponent;
 use App\Http\Livewire\Lab\SampleManagement\TestReportsComponent;
 use App\Http\Livewire\Lab\SampleManagement\TestRequestComponent;
+use App\Http\Livewire\Lab\Lists\OutgoingReferralManagerComponent;
 use App\Http\Livewire\Lab\SampleManagement\StoreSamplesComponent;
 use App\Http\Livewire\Lab\SampleManagement\TestApprovalComponent;
 use App\Http\Livewire\Lab\SampleManagement\TestRejectedComponent;
@@ -116,6 +117,7 @@ Route::group(['middleware' => ['auth', 'suspended_user']], function () {
         Route::get('reception', SampleReceptionComponent::class)->middleware('permission:create-reception-info')->name('samplereception');
         Route::get('nims', NimsPackageListComponent::class)->middleware('permission:create-reception-info')->name('nimsamplereception');
         Route::get('/referral-reception/{batch}', ReferralReceptionComponent::class)->name('referral-requests.show');
+        Route::get('/referral-outgoing/{batch}', OutgoingReferralManagerComponent::class)->name('referral-requests.outgoing');
 // Route::get('/referral-accession/{batch}', ReferralSampleAccessionComponent::class)->name('referral.accession');
         Route::get('batch/{batch}/specimen-req', SpecimenRequestComponent::class)->middleware('permission:accession-samples')->name('specimen-request');
         Route::get('batch/{batch}/paternity-req', PaternitySpecimenRequest::class)->middleware('permission:accession-samples')->name('paternity-test-reception');
@@ -157,6 +159,8 @@ Route::group(['middleware' => ['auth', 'suspended_user']], function () {
             Route::get('combinedTestResultsRpt/{resultIds?}', [SearchResultsController::class, 'combinedTestResultsReport'])->name('combined-test-results-report');
             Route::get('comboTestResultsRpt/{resultIds?}', [SearchResultsController::class, 'comboReport'])->name('combo-report');
         });
+
+
     });
 
     Route::group(['prefix' => 'report'], function () {
