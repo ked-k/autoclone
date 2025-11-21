@@ -303,56 +303,7 @@ class ReferralReceptionComponent extends Component
         }
     }
 
-    public function saveSampleOld()
-    {
-        try{
-             $key = env('INSTITUTION_API_KEY');
-        // Use your existing saveSampleInformation method logic
-        $this->validate([
-            'sample_identity' => 'required',
-            'sample_type_id' => 'required|integer',
-            'volume' => 'required|numeric',
-            // ... other validation rules from your existing component
-        ]);
-        $existingSample = Sample::where('sample_identity', str_replace(' ', '', trim($this->sample_identity)))->first();
-        if ($existingSample) {
-            $this->dispatchBrowserEvent('alert', ['type' => 'warning', 'message' => 'Sample with this identity already exists. Please use a different identity.']);
-              $this->showAccessionModal = false;
-            $this->resetForm();
-              $response = Http::withHeaders([
-            // Use the header your API expects
-            'X-Institution-API-Key' => $key,
-            'Accept' => 'application/json',
-        ])->put(env('CENTRAL_INSTANCE_URL') . "/api/v1/SampleReferralCrossBorder/referral/sample/{$this->sample_identity}/accept");
 
-
-            return;
-        }
-
-        $this->storeParticipant();
-        // dd( $this->participant);
-        $this->saveSampleInformation();
-
-        $this->showAccessionModal = false;
-        $this->resetForm();
-
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'success',
-            'message' => 'Sample accessioned successfully!'
-        ]);
-            $response = Http::withHeaders([
-            // Use the header your API expects
-            'X-Institution-API-Key' => $key,
-            'Accept' => 'application/json',
-        ])->put(env('CENTRAL_INSTANCE_URL') . "/api/v1/SampleReferralCrossBorder/referral/sample/{$this->sample_identity}/accept");
-
-
-    } catch (Exception $e) {
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'warning',
-            'message' => 'Error accessioning sample: ' . $e->getMessage()
-        ]);}
-    }
     public function saveSample()
 {
     $key = env('INSTITUTION_API_KEY');

@@ -4,7 +4,9 @@ namespace App\Http\Livewire\Lab\Lists;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class NimsPackageListComponent extends Component
 {
@@ -93,18 +95,30 @@ class NimsPackageListComponent extends Component
             return collect([]);
         }
     }
-
     private function paginateCollection($items, $perPage)
     {
-        $page = \Illuminate\Pagination\Paginator::resolveCurrentPage();
+        $page = Paginator::resolveCurrentPage();
         $total = $items->count();
 
-        return new \Illuminate\Pagination\LengthAwarePaginator(
+        return new LengthAwarePaginator(
+            $items->forPage($page, $perPage)->values(),
+            $total,
+            $perPage,
+            $page,
+            ['path' => Paginator::resolveCurrentPath()]
+        );
+    }
+    private function paginateColllection($items, $perPage)
+    {
+        $page = Paginator::resolveCurrentPage();
+        $total = $items->count();
+
+        return new LengthAwarePaginator(
             $items->forPage($page, $perPage),
             $total,
             $perPage,
             $page,
-            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+            ['path' =>Paginator::resolveCurrentPath()]
         );
     }
 

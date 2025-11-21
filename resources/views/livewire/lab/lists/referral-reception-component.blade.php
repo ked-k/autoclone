@@ -208,11 +208,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label>Sample Identity *</label>
-                                <input type="text" wire:model="sample_identity" class="form-control">
+                                <input type="text" wire:model="sample_identity" readonly class="form-control">
                             </div>
                             <div class="col-md-6">
                                 <label>Sample Type *</label>
-                                <select wire:model="sample_type_id" class="form-control">
+                                <select wire:model="sample_type_id" readonly class="form-control">
                                     <option value="">Select Sample Type</option>
                                     @foreach($sampleTypes as $type)
                                         <option value="{{ $type->id }}">{{ $type->type }}</option>
@@ -236,7 +236,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label>Volume</label>
-                                <input type="number" wire:model="volume" class="form-control" step="0.1">
+                                <input type="number" wire:model="volume" readonly class="form-control" step="0.1">
                             </div>
                         </div>
 
@@ -301,7 +301,7 @@
                                                 class="mb-3 @if ($entry_type == 'Participant') col-md-2 @else col-md-3 @endif">
                                                 <label for="date_collected" class="form-label">Collection
                                                     Date/Time</label>
-                                                <input id="date_collected" type="datetime-local" class="form-control"
+                                                <input readonly id="date_collected" type="datetime-local" class="form-control"
                                                     wire:model.lazy="date_collected"
                                                     @if ($is_isolate) disabled @endif>
                                                 @error('date_collected')
@@ -330,8 +330,8 @@
                                             @endif
 
                                             <div class="mb-3 col-md-3">
-                                                <label for="sample_identity" class="form-label">Sample ID</label>
-                                                <input id="sample_identity" type="text" class="form-control"
+                                                <label for="sample_identity" class="form-label">PID</label>
+                                                <input id="sample_identity" readonly type="text" class="form-control"
                                                     wire:model.lazy="sample_identity">
                                                 @error('sample_identity')
                                                     <div class="text-danger text-small">{{ $message }}</div>

@@ -24,13 +24,13 @@
             <div class="card-body">
                 <x-table-utilities>
                     <div class="d-flex align-items-center gap-3">
-                        <div class="d-flex align-items-center me-2">
+                        <div class=" align-items-center me-2">
                             <label for="search" class="text-nowrap mr-2 mb-0">Search</label>
                             <input type="text" wire:model.debounce.300ms="search" class="form-control"
                                    placeholder="Search requests...">
                         </div>
 
-                        <div class="d-flex align-items-center me-2">
+                        <div class="align-items-center me-2">
                             <label for="statusFilter" class="text-nowrap mr-2 mb-0">Status</label>
                             <select wire:model="statusFilter" class="form-select">
                                 <option value="all">All Status</option>
@@ -42,7 +42,7 @@
                             </select>
                         </div>
 
-                        <div class="d-flex align-items-center me-2">
+                        <div class="align-items-center me-2">
                             <label for="orderBy" class="text-nowrap mr-2 mb-0">Order By</label>
                             <select wire:model="orderBy" class="form-select">
                                 <option value="created_at">Date Created</option>
@@ -52,7 +52,7 @@
                             </select>
                         </div>
 
-                        <div class="d-flex align-items-center">
+                        <div class="align-items-center">
                             <label for="perPage" class="text-nowrap mr-2 mb-0">Per Page</label>
                             <select wire:model="perPage" class="form-select">
                                 <option value="10">10</option>
@@ -180,9 +180,11 @@
                                     Showing {{ $requests->firstItem() ?? 0 }} to {{ $requests->lastItem() ?? 0 }}
                                     of {{ $requests->total() }} entries
                                 </div> --}}
+                                @if(count($requests) > 0)
                                 <div class="btn-group">
-                                    {{-- {{ $requests->links('vendor.livewire.bootstrap') }} --}}
+                                    {{ $requests->links('vendor.livewire.bootstrap') }}
                                 </div>
+                                @endif
                             </div>
                         </div>
                     </div>
