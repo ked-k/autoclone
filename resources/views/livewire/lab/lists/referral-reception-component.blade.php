@@ -150,6 +150,7 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
+                        <th>Sample Ref</th>
                         <th>Sample ID</th>
                         <th>Specimen Type</th>
                         <th>Age/Gender</th>
@@ -162,6 +163,7 @@
                     @foreach($samples as $index => $sample)
                     <tr>
                         <td>{{ $sample['identifier'] ?? $sample['sample_id'] }}</td>
+                        <td>{{ $sample['sample_id'] }}</td>
                         <td>{{ $sample['specimen_type'] }}</td>
                         <td>{{ $sample['age'] }}/{{ $sample['gender'] }}</td>
                         <td>{{ $sample['pathogen'] }}</td>
