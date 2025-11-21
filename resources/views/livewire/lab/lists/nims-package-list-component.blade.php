@@ -33,12 +33,8 @@
                         <div class="align-items-center me-2">
                             <label for="statusFilter" class="text-nowrap mr-2 mb-0">Status</label>
                             <select wire:model="statusFilter" class="form-select">
-                                <option value="all">All Status</option>
                                 <option value="incoming">Incoming</option>
-                                <option value="outgoing">outgoing</option>
-                                <option value="completed">Completed</option>
-                                <option value="dispatched">Dispatched</option>
-                                <option value="delivered">Delivered</option>
+                                <option value="outgoing">Outgoing</option>
                             </select>
                         </div>
 
@@ -71,7 +67,11 @@
                                 <tr>
                                     <th>No.</th>
                                     <th>Request No</th>
+                                    @if(in_array($this->statusFilter, ['outgoing']))
+                                        <th>Receiving Institution</th>
+                                    @else
                                     <th>Requester Institution</th>
+                                    @endif
                                     <th>Samples</th>
                                     <th>Pathogen</th>
                                     <th>Status</th>
@@ -93,19 +93,29 @@
                                         </td>
                                         <td>
                                             <div>
-                                                <strong>{{ $request['requester_institution']['name'] ?? 'N/A' }}</strong>
-                                                @if($request['requester_institution']['short_code'] ?? false)
-                                                    <br>
-                                                    <small class="text-muted">
-                                                        {{ $request['requester_institution']['short_code'] }}
-                                                    </small>
+                                                @if(in_array($this->statusFilter, ['outgoing']))
+                                                    <strong>{{ $request['receiving_institution']['name'] ?? 'N/A' }}</strong>
+                                                    @if($request['receiving_institution']['short_code'] ?? false)
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            {{ $request['receiving_institution']['short_code'] }}
+                                                        </small>
+                                                    @else
+                                                    <strong>{{ $request['requester_institution']['name'] ?? 'N/A' }}</strong>
+                                                    @if($request['requester_institution']['short_code'] ?? false)
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            {{ $request['requester_institution']['short_code'] }}
+                                                        </small>
+                                                    @endif
+                                                    @if($request['requester_institution']['country'] ?? false)
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            {{ $request['requester_institution']['country']['name'] }}
+                                                        </small>
+                                                    @endif
                                                 @endif
-                                                @if($request['requester_institution']['country'] ?? false)
-                                                    <br>
-                                                    <small class="text-muted">
-                                                        {{ $request['requester_institution']['country']['name'] }}
-                                                    </small>
-                                                @endif
+
                                             </div>
                                         </td>
                                         <td>
