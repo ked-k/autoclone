@@ -60,7 +60,7 @@ class NimsPackageListComponent extends Component
             $response = Http::withHeaders([
                 'X-Institution-API-Key' => $key, // Adjust based on your auth
                 'Accept' => 'application/json',
-            ])->get(url(env('CENTRAL_INSTANCE_URL').'/api/v1/SampleReferralCrossBorder/referral/incoming', ['type' => $this->statusFilter]));
+            ])->get(url(env('CENTRAL_INSTANCE_URL').'/api/v1/SampleReferralCrossBorder/referral/'.$this->statusFilter ));
                 // dd($response->body());
             if ($response->successful()) {
                 $data = $response->json();
